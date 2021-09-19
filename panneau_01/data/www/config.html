@@ -1,0 +1,295 @@
+<!DOCTYPE HTML>
+<html>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<head>
+		<style>
+		table, td, th {border: 1px solid black;}
+		table {border-collapse:collapse; max-width: 1000px;}
+		td {text-align: center;}
+		</style>
+		<title>%OBJECTNAME%    Back Office</title>
+	</head>
+	<script>
+  lastHeartBeat = Date.now();
+  
+  // leading zero convertor
+  const zeroPad = (num, places) => String(num).padStart(places, '0')
+
+  function checkHeartbeat()
+  {
+    if (Date.now() - lastHeartBeat > 10000)
+    {
+      document.getElementById("heartbeat").innerHTML = "&#x2620;"
+      console.log('Lost HeartBeat');
+    }
+  }
+
+  setInterval(checkHeartbeat, 10000);
+  
+  var gateway = `ws://${window.location.hostname}/ws`;
+  var websocket;
+  window.addEventListener('load', onLoad);
+  
+  function initWebSocket() 
+  {
+    console.log('Trying to open a WebSocket connection...');
+    websocket = new WebSocket(gateway);
+    websocket.onopen    = onOpen;
+    websocket.onclose   = onClose;
+    websocket.onmessage = onMessage;
+  }
+  
+  function onOpen(event) 
+  {
+    console.log('Connection opened');
+    document.getElementById("ws_connect").innerHTML = "&#9989;";
+  }
+  
+  function onClose(event) 
+  {
+    console.log('Connection closed');
+    setTimeout(initWebSocket, 2000);
+    document.getElementById("ws_connect").innerHTML = "&#10060;";
+  }
+  
+  function onLoad(event) 
+  {
+    initWebSocket();
+  }
+  
+  function onMessage(event) 
+  {
+    var obj = JSON.parse(event.data);
+    console.log(event.data);
+    
+    if (obj.hasOwnProperty('uptime'))
+    {
+      document.getElementById("uptime").innerHTML = obj.uptime;
+      document.getElementById("heartbeat").innerHTML = "&#x2764;";  // full heart
+      lastHeartBeat = Date.now();
+    }
+	
+	if (obj.hasOwnProperty('objectId'))
+    {
+      document.getElementById("objectId").value = obj.objectId;
+    }
+	
+	if (obj.hasOwnProperty('groupId'))
+    {
+      document.getElementById("groupId").value = obj.groupId;
+    }
+	
+	if (obj.hasOwnProperty('objectName'))
+    {
+      document.getElementById("objectName").value = obj.objectName;
+    }
+	
+	if (obj.hasOwnProperty('activeLeds'))
+    {
+      document.getElementById("activeLeds").value = obj.activeLeds;
+	  document.getElementById("indexLed").max = obj.activeLeds;
+	  
+	  document.getElementById("seuil1Max").innerHTML = parseInt(document.getElementById("seuil2").value,10)-1;
+	  document.getElementById("seuil1").max = parseInt(document.getElementById("seuil2").value,10)-1;
+	  document.getElementById("seuil2").min = parseInt(document.getElementById("seuil1").value,10)+1;
+	  document.getElementById("seuil2Min").innerHTML = parseInt(document.getElementById("seuil1").value,10)+1;
+	  document.getElementById("seuil2").max = obj.activeLeds;	  
+	  document.getElementById("seuil2Max").innerHTML = obj.activeLeds;	  
+    }
+	
+	if (obj.hasOwnProperty('brightness'))
+    {
+      document.getElementById("brightness").value = obj.brightness;
+      document.getElementById("brightness2").innerHTML = obj.brightness;
+    }
+	
+	if (obj.hasOwnProperty('seuil1'))
+    {
+      document.getElementById("seuil1").value = obj.seuil1;
+    }
+	
+	if (obj.hasOwnProperty('seuil2'))
+    {
+      document.getElementById("seuil2").value = obj.seuil2;
+    }
+	
+	if (obj.hasOwnProperty('indexLed'))
+    {
+      document.getElementById("indexLed").value = obj.indexLed;
+	  document.getElementById('indexLed2').innerHTML = obj.indexLed;
+    }
+		
+	if (obj.hasOwnProperty('couleur1'))
+    {
+      newColor="#" + zeroPad(obj.couleur1[0].toString(16), 2) + zeroPad(obj.couleur1[1].toString(16), 2) + zeroPad(obj.couleur1[2].toString(16), 2);
+	  console.log(newColor);
+	  document.getElementById("couleur1").value = newColor;
+	  
+    }
+
+	if (obj.hasOwnProperty('couleur2'))
+    {
+      newColor="#" + zeroPad(obj.couleur2[0].toString(16), 2) + zeroPad(obj.couleur2[1].toString(16), 2) + zeroPad(obj.couleur2[2].toString(16), 2);
+	  console.log(newColor);
+	  document.getElementById("couleur2").value = newColor;
+    }
+	
+	if (obj.hasOwnProperty('couleur3'))
+    {
+      newColor="#" + zeroPad(obj.couleur3[0].toString(16), 2) + zeroPad(obj.couleur3[1].toString(16), 2) + zeroPad(obj.couleur3[2].toString(16), 2);
+	  console.log(newColor);
+	  document.getElementById("couleur3").value = newColor;
+    }
+	
+	if (obj.hasOwnProperty('apName'))
+    {
+      document.getElementById("apName").value = obj.apName;
+    }
+	
+	if (obj.hasOwnProperty('apPassword') && obj.apPassword != "")
+    {
+      document.getElementById("apPassword").value = obj.apPassword;
+    }
+	
+	if (obj.hasOwnProperty('apIP'))
+    {
+      document.getElementById("apIP").value = obj.apIP[0] + "." + obj.apIP[1] + "." + obj.apIP[2] + "." + obj.apIP[3];
+    }
+	
+	if (obj.hasOwnProperty('apNetMsk'))
+    {
+      document.getElementById("apNetMsk").value = obj.apNetMsk[0] + "." + obj.apNetMsk[1] + "." + obj.apNetMsk[2] + "." + obj.apNetMsk[3];
+    }
+  }
+  
+  function sendNewValue(name, val, string) 
+  {
+    if (string)
+	{
+		console.log("{\"new_"+ name + "\":\"" + val + "\"}");
+		websocket.send("{\"new_"+ name + "\":\"" + val + "\"}");
+	}
+	else
+	{
+		console.log("{\"new_"+ name + "\":" + val + "}");
+		websocket.send("{\"new_"+ name + "\":" + val + "}");
+	}
+	
+	if (name=="brightness")
+    {
+      document.getElementById("brightness2").innerHTML = val;
+    }
+	
+	if (name=="delaiBlocage")
+    {
+      document.getElementById("delaiBlocage").innerHTML = val;
+    }
+  }
+  
+  
+  
+  </script>  
+	<body>
+	<table>
+    <tr>
+      <td colspan="2"><h2>%OBJECTNAME% Back Office</h2></td>
+    </tr>
+    <tr>
+      <td>Object name </td>
+      <td><input type="text" id="objectName" name="objectName" onchange="sendNewValue('objectName',document.getElementById('objectName').value, true);"> &nbsp; &nbsp; &nbsp; &nbsp; 20 characters max</td>
+    </tr>
+    <tr>
+      <td>Object ID </td>
+      <td><input type="number" id="objectId" name="objectId" min="1" max="1000" onchange="sendNewValue('objectId',document.getElementById('objectId').value, false);"> &nbsp; &nbsp; &nbsp; &nbsp; 1 - 1000</td>
+    </tr>
+	<tr>
+      <td>Group ID </td>
+      <td><input type="number" id="groupId" name="groupId" min="1" max="1000" onchange="sendNewValue('groupId',document.getElementById('groupId').value, false);"> &nbsp; &nbsp; &nbsp; &nbsp; 1 - 1000</td>
+    </tr>
+    <tr>
+      <td>ActiveLeds </td>
+      <td><input type="number" id="activeLeds" name="activeLeds" min="1" max="%MAXLEDS%" onchange="sendNewValue('activeLeds',document.getElementById('activeLeds').value, false);"> &nbsp; &nbsp; &nbsp; &nbsp;  1 - %MAXLEDS%</td>
+    </tr>
+    <tr>
+      <td>Brightness : <span id="brightness2"></span></td>
+      <td><input class="enabled" id="brightness" name="brightness" type="range" min="0" max="255" step="5" onChange="sendNewValue('brightness',document.getElementById('brightness').value, false);"></td>
+    </tr>
+	<tr>
+      <td>indexLed : <span id="indexLed2"></span></td>
+      <td><input class="enabled" id="indexLed" type="range" min="0" max="document.getElementById('activeLeds').value" step="1" oninput="sendNewValue('indexLed',document.getElementById('indexLed').value);document.getElementById('indexLed2').innerHTML = document.getElementById('indexLed').value;"></td>
+    </tr>
+	<tr>
+      <td>Seuil 1</td>
+      <td><input type="number" id="seuil1" name="seuil1" min="1" max="document.getElementById('seuil2').value" onchange="sendNewValue('seuil1',document.getElementById('seuil1').value, false);"> &nbsp; &nbsp; &nbsp; &nbsp;  1 - <span id="seuil1Max"></span></td>
+    </tr>
+	<tr>
+      <td>Seuil 2</td>
+      <td><input type="number" id="seuil2" name="seuil2" min="document.getElementById('seuil2').value+1" max="document.getElementById('activeLeds').value" onchange="sendNewValue('seuil2',document.getElementById('seuil2').value, false);"> &nbsp; &nbsp; &nbsp; &nbsp;  <span id="seuil2Min"></span> - <span id="seuil2Max"></span></td>
+    </tr>
+	<tr>
+      <td>Couleur 1</td>
+      <td><input type="color" id="couleur1" name="couleur1" onchange="sendNewValue('couleur1',document.getElementById('couleur1').value, true);">
+    </tr>
+	<tr>
+      <td>Couleur 2</td>
+      <td><input type="color" id="couleur2" name="couleur2" onchange="sendNewValue('couleur2',document.getElementById('couleur2').value, true);">
+    </tr>
+	<tr>
+      <td>Couleur 3</td>
+      <td><input type="color" id="couleur3" name="couleur3" onchange="sendNewValue('couleur3',document.getElementById('couleur3').value, true);">
+    </tr>
+	<tr>
+      <td colspan="2"><h2>%APNAME% Network config</h2></td>
+    </tr>
+    <tr>
+      <td>AP name </td>
+      <td><input type="text" id="apName" name="apName" onchange="sendNewValue('apName',document.getElementById('apName').value, true);"> &nbsp; &nbsp; &nbsp; &nbsp; 20 UPPERCASE characters max</td>
+    </tr>
+	<tr>
+      <td>AP password </td>
+      <td><input type="text" id="apPasword" name="apPasword" onchange="sendNewValue('apPasword',document.getElementById('apPasword').value, true);"> &nbsp; &nbsp; &nbsp; &nbsp; vide ou min 8 - max 20 characters</td>
+    </tr>
+	<tr>
+      <td>AP IP </td>
+      <td><input type="text" id="apIP" name="apIP" onchange="sendNewValue('apIP',document.getElementById('apIP').value, true);"> &nbsp; !! restart obligatoire apres modif !!</td>
+    </tr>
+	<tr>
+      <td>AP netmask </td>
+      <td><input type="text" id="apNetMsk" name="apNetMsk" onchange="sendNewValue('apNetMsk',document.getElementById('apNetMsk').value, true);"> &nbsp; !! restart obligatoire apres modif !!</td>
+    </tr>
+	<tr>
+      <td>WebSocket Connexion </td>
+      <td><span id="ws_connect">&#10060;</span></td>
+    </tr>
+    <tr>
+      <td>Uptime </td>
+      <td><span id="uptime"></span></td>
+    </tr>
+    <tr>
+      <td>Heartbeat </td>
+      <td ><span style="color:red; font-weight:bold; font-size:20px;" id="heartbeat">&#x2620;</span></td>
+    </tr>
+	<tr>
+      <td>BLINK esp8266</td>
+      <td><button onclick="sendNewValue('blink',1, false);">BLINK</button></td>
+    </tr>
+	<tr>
+      <td>Default Object config</td>
+      <td><button onclick="sendNewValue('defaultObjectConfig',1, false);">DEFAULT OBJECT CONFIG</button></td>
+    </tr>
+	<tr>
+      <td>Default Network config</td>
+      <td><button onclick="sendNewValue('defaultNetworkConfig',1, false);">DEFAULT NETWORK CONFIG</button></td>
+    </tr>
+	<tr>
+      <td>Refresh config</td>
+      <td><button onclick="sendNewValue('refresh',1);">REFRESH</button></td>
+    </tr>
+	<tr>
+      <td>RESTART esp8266</td>
+      <td><button onclick="sendNewValue('restart',1);">RESTART</button></td>
+    </tr>
+	</table>	
+	</body>
+</html>
