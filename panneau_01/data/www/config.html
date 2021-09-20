@@ -142,18 +142,6 @@
 	  document.getElementById("bouton8_c3").style.background = newColor;
     }
 	
-	if (obj.hasOwnProperty('labelNom'))
-    {
-      document.getElementById("label1").value = obj.labelNom[0];
-	  document.getElementById("label2").value = obj.labelNom[1];
-	  document.getElementById("label3").value = obj.labelNom[2];
-	  document.getElementById("label4").value = obj.labelNom[3];
-	  document.getElementById("label5").value = obj.labelNom[4];
-	  document.getElementById("label6").value = obj.labelNom[5];
-	  document.getElementById("label7").value = obj.labelNom[6];
-	  document.getElementById("label8").value = obj.labelNom[7];
-    }
-	
 	if (obj.hasOwnProperty('apName'))
     {
       document.getElementById("apName").value = obj.apName;
@@ -243,14 +231,14 @@
 	<table width=600>
 	<tr>
       <td>
-			<input type="text" id="label1" name="label1" style="text-align:center;font-size:18px;"  onchange="sendNewValue('label1',document.getElementById('label1').value, true);">
+			<span style="text-align:center;font-size:18px;">OXYGENE</span>
 			<br>
 			<input type="button" id="bouton1_c1" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[0,1]', false);" />
 			<input type="button" id="bouton1_c2" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[0,2]', false);" />
 			<input type="button" id="bouton1_c3" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[0,3]', false);" />
 	  </td>
       <td>
-			<input type="text" id="label2" name="label2" style="text-align:center;font-size:18px;"  onchange="sendNewValue('label2',document.getElementById('label2').value, true);">
+			<span style="text-align:center;font-size:18px;">REACTEUR1</span>
 			<br>
 			<input type="button" id="bouton2_c1" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[1,1]', false);" />
 			<input type="button" id="bouton2_c2" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[1,2]', false);" />
@@ -259,14 +247,14 @@
 	  </tr>
 	  <tr>
       <td>
-			<input type="text" id="label3" name="label3" style="text-align:center;font-size:18px;"  onchange="sendNewValue('label3',document.getElementById('label3').value, true);">
+			<span style="text-align:center;font-size:18px;">ENERGIE</span>
 			<br>
 			<input type="button" id="bouton4_c1" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[3,1]', false);" />
 			<input type="button" id="bouton4_c2" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[3,2]', false);" />
 			<input type="button" id="bouton4_c3" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[3,3]', false);" />
 	  </td>
 	  <td>
-			<input type="text" id="label4" name="label4" style="text-align:center;font-size:18px;"  onchange="sendNewValue('label4',document.getElementById('label4').value, true);">
+			<span style="text-align:center;font-size:18px;">REACTEUR2</span>
 			<br>
 			<input type="button" id="bouton3_c1" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[2,1]', false);" />
 			<input type="button" id="bouton3_c2" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[2,2]', false);" />
@@ -275,14 +263,14 @@
     </tr>
 	<tr>
       <td>
-			<input type="text" id="label5" name="label5" style="text-align:center;font-size:18px;"  onchange="sendNewValue('label5',document.getElementById('label5').value, true);">
+			<span style="text-align:center;font-size:18px;">BOUCLIER</span>
 			<br>
 			<input type="button" id="bouton5_c1" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[4,1]', false);" />
 			<input type="button" id="bouton5_c2" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[4,2]', false);" />
 			<input type="button" id="bouton5_c3" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[4,3]', false);" />
 	  </td>
       <td>
-			<input type="text" id="label6" name="label6" style="text-align:center;font-size:18px;"  onchange="sendNewValue('label6',document.getElementById('label6').value, true);">
+			<span style="text-align:center;font-size:18px;">REACTEUR3</span>
 			<br>
 			<input type="button" id="bouton6_c1" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[5,1]', false);" />
 			<input type="button" id="bouton6_c2" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[5,2]', false);" />
@@ -291,14 +279,14 @@
 	  </tr>
 	  <tr>
       <td>
-			<input type="text" id="label7" name="label7" style="text-align:center;font-size:18px;"  onchange="sendNewValue('label7',document.getElementById('label7').value, true);">
+			<span style="text-align:center;font-size:18px;">COMMANDE</span>
 			<br>
 			<input type="button" id="bouton8_c1" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[7,1]', false);" />
 			<input type="button" id="bouton8_c2" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[7,2]', false);" />
 			<input type="button" id="bouton8_c3" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[7,3]', false);" />
 	  </td>
 	  <td>
-			<input type="text" id="label8" name="label8" style="text-align:center;font-size:18px;"  onchange="sendNewValue('label8',document.getElementById('label8').value, true);">
+			<span style="text-align:center;font-size:18px;">ALERTE</span>
 			<br>
 			<input type="button" id="bouton7_c1" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[6,1]', false);" />
 			<input type="button" id="bouton7_c2" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[6,2]', false);" />

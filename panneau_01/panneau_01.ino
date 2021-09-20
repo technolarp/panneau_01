@@ -129,7 +129,7 @@ void setup()
   */
   // CLIENT MODE POUR DEBUG
   const char* ssid = "MYDEBUG";
-  const char* password = "782ePAFm";
+  const char* password = "xxxxxxxxx";
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
 
@@ -433,6 +433,22 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len)
           sendObjectConfig = true;
           uneFois=true;
         }
+
+        /*
+        if (doc.containsKey("new_labelNom")) 
+        {
+          JsonArray newLabel = doc["new_labelNom"];
+        
+          uint8_t nouvellePosition = newLabel[0];
+
+          strlcpy(  aConfig.objectConfig.labelNom[nouvellePosition],
+                    newLabel[1],
+                    sizeof(aConfig.objectConfig.labelNom[nouvellePosition]));
+          
+          //writeObjectConfig = true;
+          sendObjectConfig = true;
+          uneFois=true;
+        }*/
           
         // modif network config
         if (doc.containsKey("new_apName")) 

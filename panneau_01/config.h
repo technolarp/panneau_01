@@ -31,7 +31,7 @@ class M_config
     uint8_t ledParLabel;
     uint8_t labelCouleur[8];
 
-    char labelNom[8][SIZE_ARRAY];
+    //char labelNom[8][SIZE_ARRAY];
   };
   
   // creer une structure
@@ -195,17 +195,19 @@ class M_config
         }
       }
 
+      /*
       if (doc.containsKey("labelNom"))
       {
-        JsonArray labelCouleurTmp = doc["labelNom"];
+        JsonArray labelNomTmp = doc["labelNom"];
         
         for (uint8_t i=0;i<8;i++)
         {
           strlcpy(  objectConfig.labelNom[i],
-                  labelCouleurTmp[i],
+                  labelNomTmp[i],
                   sizeof(objectConfig.labelNom[i]));
         }
-      }      
+      }
+      */
     }
   		
     // Close the file (File's destructor doesn't close the file)
@@ -294,13 +296,15 @@ class M_config
     // Allocate a temporary JsonDocument
     StaticJsonDocument<1024> doc;
 
+    /*
     String newObjectName="";
     
     for (int i=0;i<SIZE_ARRAY;i++)
     {
       newObjectName+= objectConfig.objectName[i];
     }
-  
+    */
+    String newObjectName= String(objectConfig.objectName);
     doc["objectName"] = newObjectName;
 
     doc["objectId"] = objectConfig.objectId;
@@ -339,21 +343,39 @@ class M_config
     JsonArray arrayLabelCouleur = docLabelCouleur.to<JsonArray>();
     for (uint8_t i=0;i<8;i++)
     {
-     arrayLabelCouleur.add(objectConfig.labelCouleur[i]);
+      arrayLabelCouleur.add(objectConfig.labelCouleur[i]);
     }
     
-    doc["docLabelCouleur"]=arrayLabelCouleur;
+    doc["labelCouleur"]=arrayLabelCouleur;
+
+
     
-    
+    /*
+    StaticJsonDocument<1024> docLabelNom;
+    JsonArray arrayLabelNom = docLabelNom.to<JsonArray>();
+    for (uint8_t i=0;i<8;i++)
+    {
+      String newLabel= String(objectConfig.labelNom[i]);
+      arrayLabelNom.add(newLabel);
+    }
+
+    serializeJsonPretty(arrayLabelNom, Serial);
+    doc["labelNom"]=arrayLabelNom;
+    */
     
     // Serialize JSON to file
     if (serializeJson(doc, file) == 0) 
     {
       Serial.println(F("Failed to write to file"));
     }
+    else
+    {
+      Serial.println(F("write success"));
+    }
 
     // Close the file (File's destructor doesn't close the file)
     file.close();
+    Serial.println(F("file closed"));
   }
 
   void writeNetworkConfig(const char * filename)
@@ -436,11 +458,45 @@ class M_config
     for (uint8_t i=0;i<8;i++)
     {
       objectConfig.labelCouleur[i] = 1;
-    }    
+    }
+
+/*
+    strlcpy(  objectConfig.labelNom[0],
+                    "OXYGENE",
+                    sizeof("OXYGENE"));
+    
+    strlcpy(  objectConfig.labelNom[1],
+                    "REACTEUR1",
+                    sizeof("REACTEUR1"));
+    
+    strlcpy(  objectConfig.labelNom[2],
+                    "ENERGIE",
+                    sizeof("ENERGIE"));
+    
+    strlcpy(  objectConfig.labelNom[3],
+                    "REACTEUR2",
+                    sizeof("REACTEUR2"));
+    
+    strlcpy(  objectConfig.labelNom[4],
+                    "BOUCLIER",
+                    sizeof("BOUCLIER"));
+    
+    strlcpy(  objectConfig.labelNom[5],
+                    "REACTEUR3",
+                    sizeof("REACTEUR3"));
+    
+    strlcpy(  objectConfig.labelNom[6],
+                    "COMMANDE",
+                    sizeof("COMMANDE"));
+    
+    strlcpy(  objectConfig.labelNom[7],
+                    "ALERTE",
+                    sizeof("ALERTE"));
+*/
   
     strlcpy(  objectConfig.objectName,
-    			          "vu-metre",
-    			          sizeof("vu-metre"));
+    			          "panneau",
+    			          sizeof("panneau"));
   	
   	writeObjectConfig(filename);
   }
