@@ -7,6 +7,9 @@
 		table, td, th {border: 1px solid black;}
 		table {border-collapse:collapse; max-width: 1000px;}
 		td {text-align: center;}
+		
+		
+		
 		</style>
 		<title>%OBJECTNAME%    Back Office</title>
 	</head>
@@ -87,15 +90,7 @@
 	
 	if (obj.hasOwnProperty('activeLeds'))
     {
-      document.getElementById("activeLeds").value = obj.activeLeds;
-	  document.getElementById("indexLed").max = obj.activeLeds;
-	  
-	  document.getElementById("seuil1Max").innerHTML = parseInt(document.getElementById("seuil2").value,10)-1;
-	  document.getElementById("seuil1").max = parseInt(document.getElementById("seuil2").value,10)-1;
-	  document.getElementById("seuil2").min = parseInt(document.getElementById("seuil1").value,10)+1;
-	  document.getElementById("seuil2Min").innerHTML = parseInt(document.getElementById("seuil1").value,10)+1;
-	  document.getElementById("seuil2").max = obj.activeLeds;	  
-	  document.getElementById("seuil2Max").innerHTML = obj.activeLeds;	  
+      document.getElementById("activeLeds").value = obj.activeLeds;  
     }
 	
 	if (obj.hasOwnProperty('brightness'))
@@ -104,42 +99,59 @@
       document.getElementById("brightness2").innerHTML = obj.brightness;
     }
 	
-	if (obj.hasOwnProperty('seuil1'))
-    {
-      document.getElementById("seuil1").value = obj.seuil1;
-    }
-	
-	if (obj.hasOwnProperty('seuil2'))
-    {
-      document.getElementById("seuil2").value = obj.seuil2;
-    }
-	
-	if (obj.hasOwnProperty('indexLed'))
-    {
-      document.getElementById("indexLed").value = obj.indexLed;
-	  document.getElementById('indexLed2').innerHTML = obj.indexLed;
-    }
-		
 	if (obj.hasOwnProperty('couleur1'))
     {
       newColor="#" + zeroPad(obj.couleur1[0].toString(16), 2) + zeroPad(obj.couleur1[1].toString(16), 2) + zeroPad(obj.couleur1[2].toString(16), 2);
-	  console.log(newColor);
 	  document.getElementById("couleur1").value = newColor;
 	  
+	  document.getElementById("bouton1_c1").style.background = newColor;
+	  document.getElementById("bouton2_c1").style.background = newColor;
+	  document.getElementById("bouton3_c1").style.background = newColor;
+	  document.getElementById("bouton4_c1").style.background = newColor;
+	  document.getElementById("bouton5_c1").style.background = newColor;
+	  document.getElementById("bouton6_c1").style.background = newColor;
+	  document.getElementById("bouton7_c1").style.background = newColor;
+	  document.getElementById("bouton8_c1").style.background = newColor;	  
     }
 
 	if (obj.hasOwnProperty('couleur2'))
     {
       newColor="#" + zeroPad(obj.couleur2[0].toString(16), 2) + zeroPad(obj.couleur2[1].toString(16), 2) + zeroPad(obj.couleur2[2].toString(16), 2);
-	  console.log(newColor);
 	  document.getElementById("couleur2").value = newColor;
+	  document.getElementById("bouton1_c2").style.background = newColor;
+	  document.getElementById("bouton2_c2").style.background = newColor;
+	  document.getElementById("bouton3_c2").style.background = newColor;
+	  document.getElementById("bouton4_c2").style.background = newColor;
+	  document.getElementById("bouton5_c2").style.background = newColor;
+	  document.getElementById("bouton6_c2").style.background = newColor;
+	  document.getElementById("bouton7_c2").style.background = newColor;
+	  document.getElementById("bouton8_c2").style.background = newColor;
     }
 	
 	if (obj.hasOwnProperty('couleur3'))
     {
       newColor="#" + zeroPad(obj.couleur3[0].toString(16), 2) + zeroPad(obj.couleur3[1].toString(16), 2) + zeroPad(obj.couleur3[2].toString(16), 2);
-	  console.log(newColor);
 	  document.getElementById("couleur3").value = newColor;
+	  document.getElementById("bouton1_c3").style.background = newColor;
+	  document.getElementById("bouton2_c3").style.background = newColor;
+	  document.getElementById("bouton3_c3").style.background = newColor;
+	  document.getElementById("bouton4_c3").style.background = newColor;
+	  document.getElementById("bouton5_c3").style.background = newColor;
+	  document.getElementById("bouton6_c3").style.background = newColor;
+	  document.getElementById("bouton7_c3").style.background = newColor;
+	  document.getElementById("bouton8_c3").style.background = newColor;
+    }
+	
+	if (obj.hasOwnProperty('labelNom'))
+    {
+      document.getElementById("label1").value = obj.labelNom[0];
+	  document.getElementById("label2").value = obj.labelNom[1];
+	  document.getElementById("label3").value = obj.labelNom[2];
+	  document.getElementById("label4").value = obj.labelNom[3];
+	  document.getElementById("label5").value = obj.labelNom[4];
+	  document.getElementById("label6").value = obj.labelNom[5];
+	  document.getElementById("label7").value = obj.labelNom[6];
+	  document.getElementById("label8").value = obj.labelNom[7];
     }
 	
 	if (obj.hasOwnProperty('apName'))
@@ -191,7 +203,7 @@
   
   </script>  
 	<body>
-	<table>
+	<table width=600>
     <tr>
       <td colspan="2"><h2>%OBJECTNAME% Back Office</h2></td>
     </tr>
@@ -216,18 +228,6 @@
       <td><input class="enabled" id="brightness" name="brightness" type="range" min="0" max="255" step="5" onChange="sendNewValue('brightness',document.getElementById('brightness').value, false);"></td>
     </tr>
 	<tr>
-      <td>indexLed : <span id="indexLed2"></span></td>
-      <td><input class="enabled" id="indexLed" type="range" min="0" max="document.getElementById('activeLeds').value" step="1" oninput="sendNewValue('indexLed',document.getElementById('indexLed').value);document.getElementById('indexLed2').innerHTML = document.getElementById('indexLed').value;"></td>
-    </tr>
-	<tr>
-      <td>Seuil 1</td>
-      <td><input type="number" id="seuil1" name="seuil1" min="1" max="document.getElementById('seuil2').value" onchange="sendNewValue('seuil1',document.getElementById('seuil1').value, false);"> &nbsp; &nbsp; &nbsp; &nbsp;  1 - <span id="seuil1Max"></span></td>
-    </tr>
-	<tr>
-      <td>Seuil 2</td>
-      <td><input type="number" id="seuil2" name="seuil2" min="document.getElementById('seuil2').value+1" max="document.getElementById('activeLeds').value" onchange="sendNewValue('seuil2',document.getElementById('seuil2').value, false);"> &nbsp; &nbsp; &nbsp; &nbsp;  <span id="seuil2Min"></span> - <span id="seuil2Max"></span></td>
-    </tr>
-	<tr>
       <td>Couleur 1</td>
       <td><input type="color" id="couleur1" name="couleur1" onchange="sendNewValue('couleur1',document.getElementById('couleur1').value, true);">
     </tr>
@@ -239,6 +239,74 @@
       <td>Couleur 3</td>
       <td><input type="color" id="couleur3" name="couleur3" onchange="sendNewValue('couleur3',document.getElementById('couleur3').value, true);">
     </tr>
+	</table>
+	<table width=600>
+	<tr>
+      <td>
+			<input type="text" id="label1" name="label1" style="text-align:center;font-size:18px;"  onchange="sendNewValue('label1',document.getElementById('label1').value, true);">
+			<br>
+			<input type="button" id="bouton1_c1" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[0,1]', false);" />
+			<input type="button" id="bouton1_c2" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[0,2]', false);" />
+			<input type="button" id="bouton1_c3" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[0,3]', false);" />
+	  </td>
+      <td>
+			<input type="text" id="label2" name="label2" style="text-align:center;font-size:18px;"  onchange="sendNewValue('label2',document.getElementById('label2').value, true);">
+			<br>
+			<input type="button" id="bouton2_c1" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[1,1]', false);" />
+			<input type="button" id="bouton2_c2" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[1,2]', false);" />
+			<input type="button" id="bouton2_c3" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[1,3]', false);" />
+	  </td>
+	  </tr>
+	  <tr>
+      <td>
+			<input type="text" id="label3" name="label3" style="text-align:center;font-size:18px;"  onchange="sendNewValue('label3',document.getElementById('label3').value, true);">
+			<br>
+			<input type="button" id="bouton4_c1" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[3,1]', false);" />
+			<input type="button" id="bouton4_c2" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[3,2]', false);" />
+			<input type="button" id="bouton4_c3" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[3,3]', false);" />
+	  </td>
+	  <td>
+			<input type="text" id="label4" name="label4" style="text-align:center;font-size:18px;"  onchange="sendNewValue('label4',document.getElementById('label4').value, true);">
+			<br>
+			<input type="button" id="bouton3_c1" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[2,1]', false);" />
+			<input type="button" id="bouton3_c2" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[2,2]', false);" />
+			<input type="button" id="bouton3_c3" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[2,3]', false);" />
+	  </td>
+    </tr>
+	<tr>
+      <td>
+			<input type="text" id="label5" name="label5" style="text-align:center;font-size:18px;"  onchange="sendNewValue('label5',document.getElementById('label5').value, true);">
+			<br>
+			<input type="button" id="bouton5_c1" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[4,1]', false);" />
+			<input type="button" id="bouton5_c2" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[4,2]', false);" />
+			<input type="button" id="bouton5_c3" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[4,3]', false);" />
+	  </td>
+      <td>
+			<input type="text" id="label6" name="label6" style="text-align:center;font-size:18px;"  onchange="sendNewValue('label6',document.getElementById('label6').value, true);">
+			<br>
+			<input type="button" id="bouton6_c1" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[5,1]', false);" />
+			<input type="button" id="bouton6_c2" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[5,2]', false);" />
+			<input type="button" id="bouton6_c3" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[5,3]', false);" />
+	  </td>
+	  </tr>
+	  <tr>
+      <td>
+			<input type="text" id="label7" name="label7" style="text-align:center;font-size:18px;"  onchange="sendNewValue('label7',document.getElementById('label7').value, true);">
+			<br>
+			<input type="button" id="bouton8_c1" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[7,1]', false);" />
+			<input type="button" id="bouton8_c2" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[7,2]', false);" />
+			<input type="button" id="bouton8_c3" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[7,3]', false);" />
+	  </td>
+	  <td>
+			<input type="text" id="label8" name="label8" style="text-align:center;font-size:18px;"  onchange="sendNewValue('label8',document.getElementById('label8').value, true);">
+			<br>
+			<input type="button" id="bouton7_c1" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[6,1]', false);" />
+			<input type="button" id="bouton7_c2" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[6,2]', false);" />
+			<input type="button" id="bouton7_c3" value="&nbsp; &nbsp;" style="border:none; padding: 15px 15px;" onclick="sendNewValue('bouton','[6,3]', false);" />
+	  </td>
+    </tr>
+	</table>
+	<table width=600>
 	<tr>
       <td colspan="2"><h2>%APNAME% Network config</h2></td>
     </tr>

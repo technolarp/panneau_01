@@ -30,6 +30,8 @@ class M_config
     uint8_t nombreLabel;
     uint8_t ledParLabel;
     uint8_t labelCouleur[8];
+
+    char labelNom[8][SIZE_ARRAY];
   };
   
   // creer une structure
@@ -185,13 +187,25 @@ class M_config
       if (doc.containsKey("labelCouleur"))
       {
         JsonArray labelCouleurTmp = doc["labelCouleur"];
-        for (uint8_t i=0;i++;i<8)
+        
+        for (uint8_t i=0;i<objectConfig.nombreLabel;i++)
         {
-          objectConfig.labelCouleur[i]=(uint8_t) labelCouleurTmp[i];
+          uint8_t tmpValue = labelCouleurTmp[i];
+          objectConfig.labelCouleur[i]=tmpValue;
         }
       }
 
-      
+      if (doc.containsKey("labelNom"))
+      {
+        JsonArray labelCouleurTmp = doc["labelNom"];
+        
+        for (uint8_t i=0;i<8;i++)
+        {
+          strlcpy(  objectConfig.labelNom[i],
+                  labelCouleurTmp[i],
+                  sizeof(objectConfig.labelNom[i]));
+        }
+      }      
     }
   		
     // Close the file (File's destructor doesn't close the file)

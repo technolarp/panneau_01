@@ -9,5 +9,6 @@
 	"couleur3": [255,0,0],
 	"nombreLabel": 8,
 	"ledParLabel": 2,
-	"labelCouleur": [1,1,1,1,1,1,2,3]
+	"labelCouleur": [1,2,3,1,2,3,1,2],
+	"labelNom": ["OXYGENE","REACTEUR1","ENERGIE","REACTEUR2","BOUCLIER","REACTEUR3","COMMANDE","ALERTE"]
 }

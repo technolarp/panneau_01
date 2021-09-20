@@ -419,6 +419,20 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len)
           sendObjectConfig = true;
           uneFois=true;
         }
+
+        if (doc.containsKey("new_bouton")) 
+        {
+          JsonArray newBouton = doc["new_bouton"];
+        
+          uint8_t nouvellePosition = newBouton[0];
+          uint8_t nouvelleCouleur = newBouton[1];
+          
+          aConfig.objectConfig.labelCouleur[nouvellePosition]=nouvelleCouleur;
+          
+          writeObjectConfig = true;
+          sendObjectConfig = true;
+          uneFois=true;
+        }
           
         // modif network config
         if (doc.containsKey("new_apName")) 
@@ -618,24 +632,25 @@ void panneauActif()
 
     for (uint8_t i=0;i<aConfig.objectConfig.nombreLabel;i++)
     {
-      Serial.print(aConfig.objectConfig.labelCouleur[i]);
-      Serial.print(" ");
-      if (aConfig.objectConfig.labelCouleur[i]==1)
+      for (uint8_t j=0;j<aConfig.objectConfig.ledParLabel;j++)
       {
-        aFastled->setLed(i*aConfig.objectConfig.ledParLabel, aConfig.objectConfig.couleur1);
+        if (aConfig.objectConfig.labelCouleur[i]==1)
+        {
+          aFastled->setLed(i*aConfig.objectConfig.ledParLabel+j, aConfig.objectConfig.couleur1);
+        }
+        else if (aConfig.objectConfig.labelCouleur[i]==2)
+        {
+          aFastled->setLed(i*aConfig.objectConfig.ledParLabel+j, aConfig.objectConfig.couleur2);
+        }
+        else
+        {
+          aFastled->setLed(i*aConfig.objectConfig.ledParLabel+j, aConfig.objectConfig.couleur3);
+        }
       }
-      else if (aConfig.objectConfig.labelCouleur[i]==2)
-      {
-        aFastled->setLed(i*aConfig.objectConfig.ledParLabel, aConfig.objectConfig.couleur2);
-      }
-      else
-      {
-        aFastled->setLed(i*aConfig.objectConfig.ledParLabel, aConfig.objectConfig.couleur3);
-      }
+      
       
     }
     aFastled->ledShow();
-    Serial.println(" ");
   }
   
   
