@@ -9,7 +9,7 @@
 /*
    ----------------------------------------------------------------------------
    Pour ce montage, vous avez besoin de 
-   24 leds neopixel
+   16 leds neopixel
    ----------------------------------------------------------------------------
 */
 
@@ -120,16 +120,16 @@ void setup()
   // WIFI
   WiFi.disconnect(true);
   
-  /*
+  
   // AP MODE
   WiFi.mode(WIFI_AP_STA);
   WiFi.softAPConfig(aConfig.networkConfig.apIP, aConfig.networkConfig.apIP, aConfig.networkConfig.apNetMsk);
   WiFi.softAP(aConfig.networkConfig.apName, aConfig.networkConfig.apPassword);
   
-  */
+  /*
   // CLIENT MODE POUR DEBUG
   const char* ssid = "MYDEBUG";
-  const char* password = "xxxxxxxxx";
+  const char* password = "********";
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
 
@@ -137,7 +137,7 @@ void setup()
   {
     Serial.printf("WiFi Failed!\n");        
   }
-  /**/
+  */
   
   // WEB SERVER
   // Print ESP Local IP Address
@@ -189,7 +189,7 @@ void setup()
 void loop() 
 {
 // avoid watchdog reset
-  yield();
+  //yield();
   
   // WEBSOCKET
   ws.cleanupClients();
@@ -345,18 +345,6 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len)
           sendObjectConfig = true;
         }
   
-        if (doc.containsKey("new_activeLeds")) 
-        {
-          aFastled->allLedOff();
-          
-          uint16_t tmpValeur = doc["new_activeLeds"];
-          aConfig.objectConfig.activeLeds = checkValeur(tmpValeur,1,aFastled->getNbMaxLed());
-          aFastled->setNbLed(aConfig.objectConfig.activeLeds);
-          
-          writeObjectConfig = true;
-          sendObjectConfig = true;
-        }
-  
         if (doc.containsKey("new_brightness"))
         {
           uint16_t tmpValeur = doc["new_brightness"];
@@ -367,28 +355,6 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len)
           writeObjectConfig = true;
           sendObjectConfig = true;
         }
-  
-        /*
-        if (doc.containsKey("new_seuil1")) 
-        {
-          uint16_t tmpValeur = doc["new_seuil1"];
-          aConfig.objectConfig.seuil1 = checkValeur(tmpValeur,1,aConfig.objectConfig.activeLeds);
-          
-          writeObjectConfig = true;
-          sendObjectConfig = true;
-          uneFois=true;
-        }
-  
-        if (doc.containsKey("new_seuil2")) 
-        {
-          uint16_t tmpValeur = doc["new_seuil2"];
-          aConfig.objectConfig.seuil2 = checkValeur(tmpValeur,1,aConfig.objectConfig.activeLeds);
-          
-          writeObjectConfig = true;
-          sendObjectConfig = true;
-          uneFois=true;
-        }
-        */
 
         if (doc.containsKey("new_couleur1")) 
         {
@@ -434,22 +400,6 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len)
           uneFois=true;
         }
 
-        /*
-        if (doc.containsKey("new_labelNom")) 
-        {
-          JsonArray newLabel = doc["new_labelNom"];
-        
-          uint8_t nouvellePosition = newLabel[0];
-
-          strlcpy(  aConfig.objectConfig.labelNom[nouvellePosition],
-                    newLabel[1],
-                    sizeof(aConfig.objectConfig.labelNom[nouvellePosition]));
-          
-          //writeObjectConfig = true;
-          sendObjectConfig = true;
-          uneFois=true;
-        }*/
-          
         // modif network config
         if (doc.containsKey("new_apName")) 
         {
@@ -646,25 +596,26 @@ void panneauActif()
   {
     previousMillisRefresh = currentMillisRefresh;
 
-    for (uint8_t i=0;i<aConfig.objectConfig.nombreLabel;i++)
+    uint8_t nombreLabel = 8;
+    uint8_t ledParLabel = 2;
+    
+    for (uint8_t i=0;i<nombreLabel;i++)
     {
-      for (uint8_t j=0;j<aConfig.objectConfig.ledParLabel;j++)
+      for (uint8_t j=0;j<ledParLabel;j++)
       {
         if (aConfig.objectConfig.labelCouleur[i]==1)
         {
-          aFastled->setLed(i*aConfig.objectConfig.ledParLabel+j, aConfig.objectConfig.couleur1);
+          aFastled->setLed(i*ledParLabel+j, aConfig.objectConfig.couleur1);
         }
         else if (aConfig.objectConfig.labelCouleur[i]==2)
         {
-          aFastled->setLed(i*aConfig.objectConfig.ledParLabel+j, aConfig.objectConfig.couleur2);
+          aFastled->setLed(i*ledParLabel+j, aConfig.objectConfig.couleur2);
         }
         else
         {
-          aFastled->setLed(i*aConfig.objectConfig.ledParLabel+j, aConfig.objectConfig.couleur3);
+          aFastled->setLed(i*ledParLabel+j, aConfig.objectConfig.couleur3);
         }
       }
-      
-      
     }
     aFastled->ledShow();
   }

@@ -7,7 +7,5 @@
 	"couleur1": [0,255,0],
 	"couleur2": [255,128,0],
 	"couleur3": [255,0,0],
-	"nombreLabel": 8,
-	"ledParLabel": 2,
 	"labelCouleur": [1,2,3,1,2,3,1,2]
 }

@@ -26,12 +26,8 @@ class M_config
     CRGB couleur1;
     CRGB couleur2;
     CRGB couleur3;
-
-    uint8_t nombreLabel;
-    uint8_t ledParLabel;
+    
     uint8_t labelCouleur[8];
-
-    //char labelNom[8][SIZE_ARRAY];
   };
   
   // creer une structure
@@ -146,9 +142,6 @@ class M_config
   		objectConfig.groupId = doc["groupId"];
   		objectConfig.activeLeds = doc["activeLeds"];
       objectConfig.brightness = doc["brightness"];
-
-      objectConfig.nombreLabel = doc["nombreLabel"];
-      objectConfig.ledParLabel = doc["ledParLabel"];
       
   		if (doc.containsKey("objectName"))
   		{ 
@@ -188,26 +181,12 @@ class M_config
       {
         JsonArray labelCouleurTmp = doc["labelCouleur"];
         
-        for (uint8_t i=0;i<objectConfig.nombreLabel;i++)
+        for (uint8_t i=0;i<8;i++)
         {
           uint8_t tmpValue = labelCouleurTmp[i];
           objectConfig.labelCouleur[i]=tmpValue;
         }
       }
-
-      /*
-      if (doc.containsKey("labelNom"))
-      {
-        JsonArray labelNomTmp = doc["labelNom"];
-        
-        for (uint8_t i=0;i<8;i++)
-        {
-          strlcpy(  objectConfig.labelNom[i],
-                  labelNomTmp[i],
-                  sizeof(objectConfig.labelNom[i]));
-        }
-      }
-      */
     }
   		
     // Close the file (File's destructor doesn't close the file)
@@ -296,14 +275,6 @@ class M_config
     // Allocate a temporary JsonDocument
     StaticJsonDocument<1024> doc;
 
-    /*
-    String newObjectName="";
-    
-    for (int i=0;i<SIZE_ARRAY;i++)
-    {
-      newObjectName+= objectConfig.objectName[i];
-    }
-    */
     String newObjectName= String(objectConfig.objectName);
     doc["objectName"] = newObjectName;
 
@@ -311,9 +282,6 @@ class M_config
     doc["groupId"] = objectConfig.groupId;
     doc["activeLeds"] = objectConfig.activeLeds;
     doc["brightness"] = objectConfig.brightness;
-
-    doc["nombreLabel"] = objectConfig.nombreLabel;
-    doc["ledParLabel"] = objectConfig.ledParLabel;
 
     StaticJsonDocument<128> docCouleur1;
     JsonArray arrayCouleur1 = docCouleur1.to<JsonArray>();
@@ -347,21 +315,6 @@ class M_config
     }
     
     doc["labelCouleur"]=arrayLabelCouleur;
-
-
-    
-    /*
-    StaticJsonDocument<1024> docLabelNom;
-    JsonArray arrayLabelNom = docLabelNom.to<JsonArray>();
-    for (uint8_t i=0;i<8;i++)
-    {
-      String newLabel= String(objectConfig.labelNom[i]);
-      arrayLabelNom.add(newLabel);
-    }
-
-    serializeJsonPretty(arrayLabelNom, Serial);
-    doc["labelNom"]=arrayLabelNom;
-    */
     
     // Serialize JSON to file
     if (serializeJson(doc, file) == 0) 
@@ -437,11 +390,8 @@ class M_config
   {
   	objectConfig.objectId = 1;
   	objectConfig.groupId = 1;
-  	objectConfig.activeLeds = 8;
+  	objectConfig.activeLeds = 16;
     objectConfig.brightness = 80;
-
-    objectConfig.nombreLabel = 8;
-    objectConfig.ledParLabel = 2;
 
     objectConfig.couleur1.red = 0;
     objectConfig.couleur1.green = 255;
@@ -460,40 +410,6 @@ class M_config
       objectConfig.labelCouleur[i] = 1;
     }
 
-/*
-    strlcpy(  objectConfig.labelNom[0],
-                    "OXYGENE",
-                    sizeof("OXYGENE"));
-    
-    strlcpy(  objectConfig.labelNom[1],
-                    "REACTEUR1",
-                    sizeof("REACTEUR1"));
-    
-    strlcpy(  objectConfig.labelNom[2],
-                    "ENERGIE",
-                    sizeof("ENERGIE"));
-    
-    strlcpy(  objectConfig.labelNom[3],
-                    "REACTEUR2",
-                    sizeof("REACTEUR2"));
-    
-    strlcpy(  objectConfig.labelNom[4],
-                    "BOUCLIER",
-                    sizeof("BOUCLIER"));
-    
-    strlcpy(  objectConfig.labelNom[5],
-                    "REACTEUR3",
-                    sizeof("REACTEUR3"));
-    
-    strlcpy(  objectConfig.labelNom[6],
-                    "COMMANDE",
-                    sizeof("COMMANDE"));
-    
-    strlcpy(  objectConfig.labelNom[7],
-                    "ALERTE",
-                    sizeof("ALERTE"));
-*/
-  
     strlcpy(  objectConfig.objectName,
     			          "panneau",
     			          sizeof("panneau"));
