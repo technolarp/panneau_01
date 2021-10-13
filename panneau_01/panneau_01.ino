@@ -1,7 +1,7 @@
 /*
    ----------------------------------------------------------------------------
    TECHNOLARP - https://technolarp.github.io/
-   VU-METRE 01 - https://github.com/technolarp/panneau_01
+   PANNEAU 01 - https://github.com/technolarp/panneau_01
    version 1.0 - 09/2021
    ----------------------------------------------------------------------------
 */
