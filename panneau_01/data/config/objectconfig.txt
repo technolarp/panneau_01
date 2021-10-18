@@ -1,0 +1,11 @@
+{
+	"objectId": 1,
+	"groupId": 1,
+	"objectName": "panneau",
+	"activeLeds": 16,
+    "brightness": 80,
+	"couleur1": [0,255,0],
+	"couleur2": [255,128,0],
+	"couleur3": [255,0,0],
+	"labelCouleur": [1,2,3,1,2,3,1,2]
+}
