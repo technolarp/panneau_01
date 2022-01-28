@@ -5,13 +5,13 @@
 	<head>
 		<style>
 		table, td, th {border: 1px solid black;}
-		table {border-collapse:collapse; max-width: 1000px;}
+		table {border-collapse:collapse; min-width: 700px; max-width: 700px;}
 		td {text-align: center;}
 		
-		.colorButton {background-color:white; border: 2px solid; padding: 5px 5px;font-size:30px;border-radius: 50%%;}
+		.colorButton {background-color:white; border: 2px solid; padding: 5px 5px;font-size:30px;border-radius: 50%;}
 		</style>
 		
-		<title>%OBJECTNAME%    Back Office</title>
+		<title>Back Office</title>
 	</head>
 	<script>
   lastHeartBeat = Date.now();
@@ -31,6 +31,7 @@
   setInterval(checkHeartbeat, 10000);
   
   var gateway = `ws://${window.location.hostname}/ws`;
+  
   var websocket;
   window.addEventListener('load', onLoad);
   
@@ -86,79 +87,134 @@
 	if (obj.hasOwnProperty('objectName'))
     {
       document.getElementById("objectName").value = obj.objectName;
+	  document.getElementById("objectNameTitle").innerHTML = obj.objectName + " Back Office";
     }
 		
-	if (obj.hasOwnProperty('activeLeds'))
-    {
-      document.getElementById("activeLeds").innerHTML = obj.activeLeds;  
-    }
-	
 	if (obj.hasOwnProperty('brightness'))
     {
       document.getElementById("brightness").value = obj.brightness;
       document.getElementById("brightness2").innerHTML = obj.brightness;
     }
 	
-	if (obj.hasOwnProperty('couleur1'))
+	if (obj.hasOwnProperty('intervalScintillement'))
     {
-      newColor="#" + zeroPad(obj.couleur1[0].toString(16), 2) + zeroPad(obj.couleur1[1].toString(16), 2) + zeroPad(obj.couleur1[2].toString(16), 2);
-	  document.getElementById("couleur1").value = newColor;
-	  
-	  for (let i = 0; i < 8; i++)
-	  {
-		j=i+1;
-		buttonToChange = "bouton" + j + "_c1";
-		document.getElementById(buttonToChange).style.border = "2px solid " + newColor;
-	  }
+      document.getElementById("intervalScintillement").value = obj.intervalScintillement;
+      document.getElementById("intervalScintillement2").innerHTML = obj.intervalScintillement;
     }
-
-	if (obj.hasOwnProperty('couleur2'))
+	
+	if (obj.hasOwnProperty('scintillementOnOff'))
     {
-      newColor="#" + zeroPad(obj.couleur2[0].toString(16), 2) + zeroPad(obj.couleur2[1].toString(16), 2) + zeroPad(obj.couleur2[2].toString(16), 2);
-	  
-	  document.getElementById("couleur2").value = newColor;
-	  for (let i = 0; i < 8; i++)
+      document.getElementById("scintillementOnOff").value = obj.scintillementOnOff;
+    }
+	
+	if (obj.hasOwnProperty('nbCouleurs'))
+    {
+      document.getElementById("nbCouleurs").value = obj.nbCouleurs;
+	  createTableBoutons();
+    }
+	
+	if (obj.hasOwnProperty('couleurs'))
+    {
+      for (let i = 0; i < 5 ; i++)
 	  {
-		j=i+1;
-		buttonToChange = "bouton" + j + "_c2";
-		document.getElementById(buttonToChange).style.border = "2px solid " + newColor;
+		couleurToChange = 'couleur'+i;
+		newColor="#" + zeroPad(obj.couleurs[i][0].toString(16), 2) + zeroPad(obj.couleurs[i][1].toString(16), 2) + zeroPad(obj.couleurs[i][2].toString(16), 2);
+		document.getElementById(couleurToChange).value = newColor;
+	  }
+	  
+	  for (let i = 0; i <5; i++)
+	  {
+		labelCouleur="couleur" + i;
+		if (i < obj.nbCouleurs)
+		{
+			document.getElementById(labelCouleur).disabled = false;
+		}
+		else
+		{
+			document.getElementById(labelCouleur).disabled = true;
+			document.getElementById(labelCouleur).value = '#dddddd';
+		}
+	  }
+	  
+	  for (let i = 0; i < document.getElementById("nbSegments").value; i++)
+	  {
+	  	  for (let j = 0; j < document.getElementById("nbCouleurs").value; j++)
+		  {
+			buttonToChange = "boutonX" + i + "_c" + j;
+			labelCouleur="couleur" + j;
+			document.getElementById(buttonToChange).style.border = "2px solid " + document.getElementById(labelCouleur).value;
+		  }
 	  }
     }
 	
-	if (obj.hasOwnProperty('couleur3'))
+	if (obj.hasOwnProperty('indexCouleur'))
     {
-      newColor="#" + zeroPad(obj.couleur3[0].toString(16), 2) + zeroPad(obj.couleur3[1].toString(16), 2) + zeroPad(obj.couleur3[2].toString(16), 2);
-	  document.getElementById("couleur3").value = newColor;
-	  
-	  for (let i = 0; i < 8; i++)
+      for (let i = 0; i < document.getElementById("nbSegments").value; i++)
 	  {
-		j=i+1;
-		buttonToChange = "bouton" + j + "_c3";
-		document.getElementById(buttonToChange).style.border = "2px solid " + newColor;
-	  }
-    }
-	
-	if (obj.hasOwnProperty('labelCouleur'))
-    {
-      for (let i = 0; i < 8; i++)
-	  {
-		j=i+1;
-		bgcolor = "couleur" + obj.labelCouleur[i];		
-		buttonToChange = "bouton" + j + "_c" + obj.labelCouleur[i];
-		button_c1 = "bouton" + j + "_c1";
-		button_c2 = "bouton" + j + "_c2";
-		button_c3 = "bouton" + j + "_c3";
+		bgcolor = "couleur" + obj.indexCouleur[i];
+		buttonToChange = "boutonX" + i + "_c" + obj.indexCouleur[i];
 		
-		document.getElementById(button_c1).style.background = "#FFFFFF";
-		document.getElementById(button_c2).style.background = "#FFFFFF";
-		document.getElementById(button_c3).style.background = "#FFFFFF";
+		for (let j = 0; j < document.getElementById("nbCouleurs").value; j++)
+		{
+			button_cX = "boutonX" + i + "_c" + j;		
+			document.getElementById(button_cX).style.background = "#FFFFFF";
+		}
 		document.getElementById(buttonToChange).style.background = document.getElementById(bgcolor).value;
 	  }
     }
 	
+	if (obj.hasOwnProperty('labels'))
+    {
+      for (let i = 0; i < document.getElementById("nbSegments").value; i++)
+	  {
+		labelToSet = "label" + i;
+		document.getElementById(labelToSet).value = obj.labels[i];		
+	  }
+	}
+	
+	if (obj.hasOwnProperty('nbSegments'))
+    {
+      document.getElementById("nbSegments").value = obj.nbSegments;
+	  document.getElementById("activeLeds").innerHTML = obj.nbSegments * document.getElementById("ledParSegment").value;
+    }
+	
+	if (obj.hasOwnProperty('nbColonnes'))
+    {
+      document.getElementById("nbColonnes").value = obj.nbColonnes;
+    }
+	
+	if (obj.hasOwnProperty('ledParSegment'))
+    {
+      document.getElementById("ledParSegment").value = obj.ledParSegment;
+	  document.getElementById("activeLeds").innerHTML = document.getElementById("nbSegments").value * obj.ledParSegment;
+    }
+	
+	if (obj.hasOwnProperty('statutActuel'))
+    {
+      document.getElementById("statutSerrure2").innerHTML = getStatutValue(obj.statutActuel);
+    }
+	
+	function getStatutValue(x)
+	{
+		switch(arguments[0]) 
+		{
+		  case 5:
+			return "BLINK";
+			break;
+			
+		  case 0:
+			return "ACTIF";
+			break;
+		
+		  default:
+			return "";
+		}
+	}
+	
 	if (obj.hasOwnProperty('apName'))
     {
       document.getElementById("apName").value = obj.apName;
+	  document.getElementById("apNameTitle").innerHTML = obj.apName + " Network config";
     }
 	
 	if (obj.hasOwnProperty('apPassword') && obj.apPassword != "")
@@ -201,13 +257,73 @@
     }
   }
   
+  function sendNewLabel(name, index, value) 
+  {
+    console.log("{\"new_"+ name + "\":[" + index + ",\"" + value + "\"]}");
+	websocket.send("{\"new_"+ name + "\":[" + index + ",\"" + value + "\"]}");
+  }
   
+  
+  function updateScintillement()
+  {
+	if (document.getElementById("scintillementOnOff").value == 0)
+	{
+		document.getElementById("intervalScintillement").disabled = true;
+	}
+	else
+	{
+		document.getElementById("intervalScintillement").disabled = false;
+	}
+  }
+  
+  document.onreadystatechange = function ()
+  {
+    if (document.readyState === "complete") {
+      createTableBoutons();
+    }
+  }
+  
+  function createTableBoutons()
+  {
+	aTable = document.createElement("table");	
+	
+	var row = null;
+	
+	for (let i = 0; i < parseInt(document.getElementById("nbSegments").value); i++)
+	{
+		nbRow = i % parseInt(document.getElementById("nbColonnes").value);
+		if (nbRow == 0)
+		{
+			row = aTable.insertRow();
+		}		
+		
+		cell = row.insertCell();
+		tdToInsert = "";
+		tdToInsert = tdToInsert + "<input type=\"text\" id=\"label" + i + "\" style=\"text-align:center;font-size:18px;\" onchange=\"sendNewLabel('label'," + i + ",this.value);\"><br>";
+		
+			
+		for (let j = 0; j < document.getElementById("nbCouleurs").value; j++)
+	    {
+			tdToInsert = tdToInsert + "<input type=\"button\" id=\"boutonX" + i + "_c" + j + "\" value=\"&nbsp;&nbsp;&nbsp;&nbsp;\" class=\"colorButton\" onclick=\"sendNewValue('bouton','[" + i + "," + j + "]', false);\"  />"
+		}
+		
+		cell.innerHTML = tdToInsert;
+	}
+	
+	var element =  document.getElementById('tableBoutons');
+	if (typeof(element) != 'undefined' && element != null)
+	{
+	  document.getElementById("tableBoutons").innerHTML = "";
+	}	
+	document.getElementById("tableBoutons").appendChild(aTable);
+	console.log("tableBoutons created");
+  }
   
   </script>  
 	<body>
-	<table width=600>
+	<table>
     <tr>
-      <td colspan="2"><h2>%OBJECTNAME% Back Office</h2></td>
+      <td colspan="2"><h2><span id="objectNameTitle"></span></h2></td>
     </tr>
     <tr>
       <td>Object name </td>
@@ -215,102 +331,77 @@
     </tr>
     <tr>
       <td>Object ID </td>
-      <td><input type="number" id="objectId" name="objectId" min="1" max="1000" onchange="sendNewValue('objectId',document.getElementById('objectId').value, false);"> &nbsp; &nbsp; &nbsp; &nbsp; 1 - 1000</td>
+      <td><input type="number" id="objectId" name="objectId" min="1" max="1000" style="text-align: center;width:70px;" onchange="sendNewValue('objectId',document.getElementById('objectId').value, false);"> &nbsp; &nbsp; &nbsp; &nbsp; 1 - 1000</td>
     </tr>
 	<tr>
       <td>Group ID </td>
-      <td><input type="number" id="groupId" name="groupId" min="1" max="1000" onchange="sendNewValue('groupId',document.getElementById('groupId').value, false);"> &nbsp; &nbsp; &nbsp; &nbsp; 1 - 1000</td>
+      <td><input type="number" id="groupId" name="groupId" min="1" max="1000" style="text-align: center;width:70px;" onchange="sendNewValue('groupId',document.getElementById('groupId').value, false);"> &nbsp; &nbsp; &nbsp; &nbsp; 1 - 1000</td>
+    </tr>
+	<tr>
+      <td>nbColonnes </td>
+      <td><input type="number" id="nbColonnes" name="nbColonnes" min="1" max="10" style="text-align: center;width:70px;" onchange="sendNewValue('nbColonnes',this.value, false);"> &nbsp; &nbsp; &nbsp; &nbsp; 1 - 5</td>
+    </tr>
+    <tr>
+      <td>nbSegments </td>
+      <td><input type="number" id="nbSegments" name="nbSegments" min="1" max="20" style="text-align: center;width:70px;" onchange="sendNewValue('nbSegments',this.value, false);"> &nbsp; &nbsp; &nbsp; &nbsp; 1 - 20</td>
+    </tr>
+	<tr>
+      <td>ledParSegment </td>
+      <td><input type="number" id="ledParSegment" name="ledParSegment" min="1" max="5" style="text-align: center;width:70px;" onchange="sendNewValue('ledParSegment',this.value, false);"> &nbsp; &nbsp; &nbsp; &nbsp; 1 - 5</td>
     </tr>
     <tr>
       <td>ActiveLeds </td>
-      <td><span id="activeLeds"></span></td>
+      <td><span id="activeLeds" name="activeLeds"> </td>
     </tr>
     <tr>
       <td>Brightness : <span id="brightness2"></span></td>
-      <td><input class="enabled" id="brightness" name="brightness" type="range" min="0" max="255" step="5" onChange="sendNewValue('brightness',document.getElementById('brightness').value, false);"></td>
+	  <td><input class="enabled" id="brightness" name="brightness" type="range" min="0" max="255" step="5" onChange="sendNewValue('brightness',document.getElementById('brightness').value, false);"></td>
     </tr>
+	<tr>
+      <td>Scintillement : <span id="intervalScintillement2"></span></td>
+		<td>
+			OFF <input class="enabled" id="scintillementOnOff" name="scintillementOnOff" type="range" style="width:30px;" min="0" max="1" step="1" onChange="sendNewValue('scintillementOnOff',this.value, false); updateScintillement();"> ON
+			<br>
+			<input class="enabled" id="intervalScintillement" name="intervalScintillement" type="range" min="0" max="100" step="1" onChange="sendNewValue('intervalScintillement',this.value, false);">
+		</td>
+    </tr>
+	<tr>
+      <td>Nombre couleurs </td>
+      <td><input type="number" id="nbCouleurs" name="nbCouleurs" min="1" max="5" style="text-align: center;width:70px;" onchange="sendNewValue('nbCouleurs',this.value, false);"> &nbsp; &nbsp; &nbsp; &nbsp; 1 - 5</td>
+    </tr>
+	<table>
 	<tr>
       <td>Couleur 1</td>
-      <td><input type="color" id="couleur1" name="couleur1" onchange="sendNewValue('couleur1',document.getElementById('couleur1').value, true);">
-    </tr>
+	  <td>Couleur 2</td>
+	  <td>Couleur 3</td>
+	  <td>Couleur 4</td>
+	  <td>Couleur 5</td>
+	</tr>
 	<tr>
-      <td>Couleur 2</td>
-      <td><input type="color" id="couleur2" name="couleur2" onchange="sendNewValue('couleur2',document.getElementById('couleur2').value, true);">
-    </tr>
-	<tr>
-      <td>Couleur 3</td>
-      <td><input type="color" id="couleur3" name="couleur3" onchange="sendNewValue('couleur3',document.getElementById('couleur3').value, true);">
-    </tr>
+	  <td><input type="color" id="couleur0" name="couleur0" onchange="sendNewValue('couleurs','[0,&#34;'+this.value+'&#34;]', false);"></td>
+	  <td><input type="color" id="couleur1" name="couleur1" onchange="sendNewValue('couleurs','[1,&#34;'+this.value+'&#34;]', false);"></td>
+	  <td><input type="color" id="couleur2" name="couleur2" onchange="sendNewValue('couleurs','[2,&#34;'+this.value+'&#34;]', false);"></td>
+	  <td><input type="color" id="couleur3" name="couleur3" onchange="sendNewValue('couleurs','[3,&#34;'+this.value+'&#34;]', false);"></td>
+	  <td><input type="color" id="couleur4" name="couleur4" onchange="sendNewValue('couleurs','[4,&#34;'+this.value+'&#34;]', false);"></td>
+	</tr>
 	</table>
-	<table width=600>
+	</table>
+	
+	<!--create tableBoutons with function createTableBoutonss()-->
+	<div id="tableBoutons"></div>
+	
+	<table>	
 	<tr>
+      <td>statut Panneau : <br><span id="statutSerrure2"></span></td>
       <td>
-			<span style="text-align:center;font-size:18px;">OXYGENE</span>
-			<br>
-			<input type="button" id="bouton1_c1" value="&nbsp;&nbsp;&nbsp;&nbsp;" class="colorButton" onclick="sendNewValue('bouton','[0,1]', false);" />
-			<input type="button" id="bouton1_c2" value="&nbsp;&nbsp;&nbsp;&nbsp;" class="colorButton" onclick="sendNewValue('bouton','[0,2]', false);" />
-			<input type="button" id="bouton1_c3" value="&nbsp;&nbsp;&nbsp;&nbsp;" class="colorButton" onclick="sendNewValue('bouton','[0,3]', false);" />
-	  </td>
-      <td>
-			<span style="text-align:center;font-size:18px;">REACTEUR1</span>
-			<br>
-			<input type="button" id="bouton2_c1" value="&nbsp;&nbsp;&nbsp;&nbsp;" class="colorButton"  onclick="sendNewValue('bouton','[1,1]', false);" />
-			<input type="button" id="bouton2_c2" value="&nbsp;&nbsp;&nbsp;&nbsp;" class="colorButton"  onclick="sendNewValue('bouton','[1,2]', false);" />
-			<input type="button" id="bouton2_c3" value="&nbsp;&nbsp;&nbsp;&nbsp;" class="colorButton"  onclick="sendNewValue('bouton','[1,3]', false);" />
-	  </td>
-	  </tr>
-	  <tr>
-      <td>
-			<span style="text-align:center;font-size:18px;">ENERGIE</span>
-			<br>
-			<input type="button" id="bouton4_c1" value="&nbsp;&nbsp;&nbsp;&nbsp;" class="colorButton"  onclick="sendNewValue('bouton','[3,1]', false);" />
-			<input type="button" id="bouton4_c2" value="&nbsp;&nbsp;&nbsp;&nbsp;" class="colorButton"  onclick="sendNewValue('bouton','[3,2]', false);" />
-			<input type="button" id="bouton4_c3" value="&nbsp;&nbsp;&nbsp;&nbsp;" class="colorButton"  onclick="sendNewValue('bouton','[3,3]', false);" />
-	  </td>
-	  <td>
-			<span style="text-align:center;font-size:18px;">REACTEUR2</span>
-			<br>
-			<input type="button" id="bouton3_c1" value="&nbsp;&nbsp;&nbsp;&nbsp;" class="colorButton"  onclick="sendNewValue('bouton','[2,1]', false);" />
-			<input type="button" id="bouton3_c2" value="&nbsp;&nbsp;&nbsp;&nbsp;" class="colorButton"  onclick="sendNewValue('bouton','[2,2]', false);" />
-			<input type="button" id="bouton3_c3" value="&nbsp;&nbsp;&nbsp;&nbsp;" class="colorButton"  onclick="sendNewValue('bouton','[2,3]', false);" />
-	  </td>
-    </tr>
-	<tr>
-      <td>
-			<span style="text-align:center;font-size:18px;">BOUCLIER</span>
-			<br>
-			<input type="button" id="bouton5_c1" value="&nbsp;&nbsp;&nbsp;&nbsp;" class="colorButton"  onclick="sendNewValue('bouton','[4,1]', false);" />
-			<input type="button" id="bouton5_c2" value="&nbsp;&nbsp;&nbsp;&nbsp;" class="colorButton"  onclick="sendNewValue('bouton','[4,2]', false);" />
-			<input type="button" id="bouton5_c3" value="&nbsp;&nbsp;&nbsp;&nbsp;" class="colorButton"  onclick="sendNewValue('bouton','[4,3]', false);" />
-	  </td>
-      <td>
-			<span style="text-align:center;font-size:18px;">REACTEUR3</span>
-			<br>
-			<input type="button" id="bouton6_c1" value="&nbsp;&nbsp;&nbsp;&nbsp;" class="colorButton"  onclick="sendNewValue('bouton','[5,1]', false);" />
-			<input type="button" id="bouton6_c2" value="&nbsp;&nbsp;&nbsp;&nbsp;" class="colorButton"  onclick="sendNewValue('bouton','[5,2]', false);" />
-			<input type="button" id="bouton6_c3" value="&nbsp;&nbsp;&nbsp;&nbsp;" class="colorButton"  onclick="sendNewValue('bouton','[5,3]', false);" />
-	  </td>
-	  </tr>
-	  <tr>
-      <td>
-			<span style="text-align:center;font-size:18px;">COMMANDE</span>
-			<br>
-			<input type="button" id="bouton8_c1" value="&nbsp;&nbsp;&nbsp;&nbsp;" class="colorButton"  onclick="sendNewValue('bouton','[7,1]', false);" />
-			<input type="button" id="bouton8_c2" value="&nbsp;&nbsp;&nbsp;&nbsp;" class="colorButton"  onclick="sendNewValue('bouton','[7,2]', false);" />
-			<input type="button" id="bouton8_c3" value="&nbsp;&nbsp;&nbsp;&nbsp;" class="colorButton"  onclick="sendNewValue('bouton','[7,3]', false);" />
-	  </td>
-	  <td>
-			<span style="text-align:center;font-size:18px;">ALERTE</span>
-			<br>
-			<input type="button" id="bouton7_c1" value="&nbsp;&nbsp;&nbsp;&nbsp;" class="colorButton"  onclick="sendNewValue('bouton','[6,1]', false);" />
-			<input type="button" id="bouton7_c2" value="&nbsp;&nbsp;&nbsp;&nbsp;" class="colorButton"  onclick="sendNewValue('bouton','[6,2]', false);" />
-			<input type="button" id="bouton7_c3" value="&nbsp;&nbsp;&nbsp;&nbsp;" class="colorButton"  onclick="sendNewValue('bouton','[6,3]', false);" />
+		<button onclick="sendNewValue('statutActuel',0, false);">ACTIF</button>
+		<button onclick="sendNewValue('statutActuel',5);">BLINK</button>
 	  </td>
     </tr>
 	</table>
 	<table width=600>
 	<tr>
-      <td colspan="2"><h2>%APNAME% Network config</h2></td>
+      <td colspan="2"><h2><span id="apNameTitle"></span></h2></td>
     </tr>
     <tr>
       <td>AP name </td>
@@ -342,7 +433,7 @@
     </tr>
 	<tr>
       <td>BLINK esp8266</td>
-      <td><button onclick="sendNewValue('blink',1, false);">BLINK</button></td>
+      <td><button onclick="sendNewValue('statutActuel',5);">BLINK</button></td>
     </tr>
 	<tr>
       <td>Default Object config</td>
