@@ -77,7 +77,7 @@ void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType 
 void handleWebSocketMessage(void *arg, uint8_t *data, size_t len); 
 void handleWebsocketBuffer();
 void notFound(AsyncWebServerRequest *request);
-void checkCharacter(char* toCheck, char* allowed, char replaceChar);
+void checkCharacter(char* toCheck, const char* allowed, char replaceChar);
 void sendUptime();
 void sendMaxLed();
 void sendStatut();
@@ -181,7 +181,7 @@ void setup()
   // Print ESP Local IP Address
   Serial.print(F("localIP: "));
   Serial.println(WiFi.localIP());
-  /**/
+  */
   
   // WEB SERVER
   // Route for root / web page
@@ -533,14 +533,13 @@ void handleWebsocketBuffer()
           JsonArray newLabel = doc["new_label"];
   
           uint8_t i = newLabel[0];
-          char newLabelStr[SIZE_ARRAY];
-          //strncpy(newLabelStr, newLabel[1], SIZE_ARRAY);
           strlcpy(  aConfig.objectConfig.labels[i],
                     newLabel[1],
                     SIZE_ARRAY);
 
           // check for unsupported char
-          char listeCheck[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_- ";
+          
+          char const listeCheck[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_- ";
           checkCharacter(aConfig.objectConfig.labels[i], listeCheck, '_');
 
           writeObjectConfigFlag = true;
@@ -568,7 +567,7 @@ void handleWebsocketBuffer()
                     sizeof(aConfig.networkConfig.apName));
   
           // check for unsupported char
-          char listeCheck[] = "ABCDEFGHIJKLMNOPQRSTUVWYXZ0123456789_-";
+          char const listeCheck[] = "ABCDEFGHIJKLMNOPQRSTUVWYXZ0123456789_-";
           checkCharacter(aConfig.networkConfig.apName, listeCheck, 'A');
           
           writeNetworkConfigFlag = true;
@@ -700,7 +699,7 @@ void notFound(AsyncWebServerRequest *request)
     request->send(404, "text/plain", "Not found");
 }
 
-void checkCharacter(char* toCheck, char* allowed, char replaceChar)
+void checkCharacter(char* toCheck, const char* allowed, char replaceChar)
 {
   for (uint8_t i = 0; i < strlen(toCheck); i++)
   {
