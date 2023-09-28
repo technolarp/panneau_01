@@ -1,0 +1,18 @@
+{
+	"objectId": 1,
+	"groupId": 1,
+	"objectName": "panneau 1",
+	"activeLeds": 8,
+	"nbColonnes": 2,
+	"nbSegments": 4,
+	"ledParSegment": 2,
+	"brightness": 80,
+	"intervalScintillement":50,
+	"scintillementOnOff":0,
+	"nbCouleurs":3,
+	"couleurs": [[0,255,0],[255,128,0],[255,0,0],[255,255,0],[255,0,255]],
+	"statutActuel":0,
+	"statutPrecedent":0,
+	"labels": ["LABEL 01","LABEL 02","LABEL 03","LABEL 04","LABEL 05","LABEL 06","LABEL 07","LABEL 08","LABEL 09","LABEL 10","LABEL 11","LABEL 12","LABEL 13","LABEL 14","LABEL 15","LABEL 16","LABEL 17","LABEL 18","LABEL 19","LABEL 20"],
+	"indexCouleur": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+}
