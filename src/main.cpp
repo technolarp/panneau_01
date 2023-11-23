@@ -538,8 +538,7 @@ void handleWebsocketBuffer()
                     SIZE_ARRAY);
 
           // check for unsupported char
-          
-          char const listeCheck[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_- ";
+          char const * listeCheck = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 _-";
           checkCharacter(aConfig.objectConfig.labels[i], listeCheck, '_');
 
           writeObjectConfigFlag = true;
@@ -567,7 +566,7 @@ void handleWebsocketBuffer()
                     sizeof(aConfig.networkConfig.apName));
   
           // check for unsupported char
-          char const listeCheck[] = "ABCDEFGHIJKLMNOPQRSTUVWYXZ0123456789_-";
+          char const * listeCheck = "ABCDEFGHIJKLMNOPQRSTUVWYXZ0123456789_-";
           checkCharacter(aConfig.networkConfig.apName, listeCheck, 'A');
           
           writeNetworkConfigFlag = true;
@@ -703,7 +702,8 @@ void checkCharacter(char* toCheck, const char* allowed, char replaceChar)
 {
   for (uint8_t i = 0; i < strlen(toCheck); i++)
   {
-    if (!strchr(allowed, toCheck[i]))
+    Serial.print(toCheck[i]);
+    if (strchr(allowed, toCheck[i]) == NULL)
     {
       toCheck[i]=replaceChar;
     }
