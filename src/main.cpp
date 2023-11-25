@@ -24,9 +24,13 @@
 TODO LIST
 
 version 1.1
+ajouter un mode blink aleatoire
+ajouter un blink individuel sur chaque groupe
 ajouter type led matrice et ring
 ajouter sens matrice led
 ajouter boutons pour commander le panneau
+si reduction nbCouleur, faire uen passe sur les couleurs
+option pour extinction aléatoire
 */
 
 #include <Arduino.h>
@@ -47,7 +51,7 @@ bool flagBufferWebsocket = false;
 #include "config.h"
 M_config aConfig;
 
-#define BUFFERSENDSIZE 600
+#define BUFFERSENDSIZE 1000
 char bufferToSend[BUFFERSENDSIZE];
 
 // FASTLED
@@ -143,7 +147,6 @@ void setup()
   Serial.println(F(""));
   Serial.println(F("connecting WiFi"));
   
-  /**/
   // AP MODE
   WiFi.mode(WIFI_AP_STA);
   WiFi.softAPConfig(aConfig.networkConfig.apIP, aConfig.networkConfig.apIP, aConfig.networkConfig.apNetMsk);
@@ -164,8 +167,8 @@ void setup()
   
   /*
   // CLIENT MODE POUR DEBUG
-  const char* ssid = "SID";
-  const char* password = "PASSWORD";
+  const char* ssid = "SSID";
+  const char* password = "PASSWORD*";
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
   
@@ -294,8 +297,7 @@ void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType 
         
         // send volatile info
         sendMaxLed();
-
-        sendUptime();
+        sendUptime();        
         break;
         
       case WS_EVT_DISCONNECT:
@@ -349,6 +351,9 @@ void handleWebsocketBuffer()
                     doc["new_objectName"],
                     sizeof(aConfig.objectConfig.objectName));
   
+          char const * listeCheck = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 _-";
+          checkCharacter(aConfig.objectConfig.objectName, listeCheck, '_');
+
           writeObjectConfigFlag = true;
           sendObjectConfigFlag = true;
         }
@@ -449,6 +454,17 @@ void handleWebsocketBuffer()
           aConfig.objectConfig.activeLeds = checkValeur(aConfig.objectConfig.nbSegments * aConfig.objectConfig.ledParSegment,1,NB_LEDS_MAX);
           aFastled.setNbLed(aConfig.objectConfig.activeLeds);
           aFastled.allLedOff(false);
+          
+          uneFois=true;
+          
+          writeObjectConfigFlag = true;
+          sendObjectConfigFlag = true;
+        }
+
+        if (doc.containsKey("new_ledMatrixType"))
+        {
+          uint16_t tmpValeur = doc["new_ledMatrixType"];
+          aConfig.objectConfig.ledMatrixType = checkValeur(tmpValeur,0,1);
           
           uneFois=true;
           
@@ -702,7 +718,6 @@ void checkCharacter(char* toCheck, const char* allowed, char replaceChar)
 {
   for (uint8_t i = 0; i < strlen(toCheck); i++)
   {
-    Serial.print(toCheck[i]);
     if (strchr(allowed, toCheck[i]) == NULL)
     {
       toCheck[i]=replaceChar;
@@ -785,22 +800,47 @@ void panneauActif()
   {
     uneFois = false;
     Serial.println(F("PANNEAU ACTIF"));
-
-    sendStatut();
-  }
-  
-  if( (millis() - previousMillisRefresh) > intervalRefresh)
-  {
-    previousMillisRefresh = millis();
+    
+    uint8_t nbLigne = aConfig.objectConfig.nbSegments/aConfig.objectConfig.nbColonnes;
+    uint8_t ledParLigne = aConfig.objectConfig.nbColonnes*aConfig.objectConfig.ledParSegment;
+    
+    if (aConfig.objectConfig.ledMatrixType==0)
+    {
+      // led strip is linear
+      for (uint8_t i=0;i<aConfig.objectConfig.activeLeds;i++)
+      {
+        aFastled.indexMatrix[i]=i;
+      }
+    }
+    else
+    {
+      // led strip is in snake shape
+      for (uint8_t i=0;i<nbLigne;i++)
+      {
+        for (uint8_t j=0;j<ledParLigne;j++)
+        {
+          if (i%2==0)
+          {
+            aFastled.indexMatrix[i*ledParLigne+j]=i*ledParLigne+j;
+          }
+          else
+          {
+            aFastled.indexMatrix[i*ledParLigne+j]=i*ledParLigne+ledParLigne-1-j;
+          }
+        }
+      }
+    }
     
     for (uint8_t i=0;i<aConfig.objectConfig.nbSegments;i++)
     {
       for (uint8_t j=0;j<aConfig.objectConfig.ledParSegment;j++)
       {
-        aFastled.ledOn(i*aConfig.objectConfig.ledParSegment+j, aConfig.objectConfig.couleurs[aConfig.objectConfig.indexCouleur[i]], false);
+        uint8_t indexLed = i*aConfig.objectConfig.ledParSegment+j;
+        aFastled.ledOn(aFastled.indexMatrix[indexLed], aConfig.objectConfig.couleurs[aConfig.objectConfig.indexCouleur[i]], true);
       }
     }
-    aFastled.ledShow();
+
+    sendStatut();
   }
 }
 

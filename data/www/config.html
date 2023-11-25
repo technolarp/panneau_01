@@ -1,353 +1,357 @@
 <!DOCTYPE HTML>
 <html>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<head>
-		<style>
-		table, td, th {border: 1px solid black;}
-		table {border-collapse:collapse; min-width: 700px; max-width: 700px;}
-		td {text-align: center;}
-		
-		.colorButton {background-color:white; border: 2px solid; padding: 5px 5px;font-size:30px;border-radius: 50%;}
-		</style>
-		
-		<title>Back Office</title>
-	</head>
-	<script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<head>
+  <style>
+    table,
+    td,
+    th {
+      border: 1px solid black;
+    }
+
+    table {
+      border-collapse: collapse;
+      min-width: 700px;
+      max-width: 700px;
+    }
+
+    td {
+      text-align: center;
+    }
+
+    .colorButton {
+      background-color: white;
+      border: 2px solid;
+      padding: 5px 5px;
+      font-size: 30px;
+      border-radius: 50%;
+    }
+  </style>
+
+  <title>Back Office</title>
+</head>
+<script>
   lastHeartBeat = Date.now();
-  
+
   // leading zero convertor
   const zeroPad = (num, places) => String(num).padStart(places, '0')
 
-  function checkHeartbeat()
-  {
-    if (Date.now() - lastHeartBeat > 10000)
-    {
+  function checkHeartbeat() {
+    if (Date.now() - lastHeartBeat > 10000) {
       document.getElementById("heartbeat").innerHTML = "&#x2620;"
       console.log('Lost HeartBeat');
     }
   }
 
   setInterval(checkHeartbeat, 10000);
-  
+
   var gateway = `ws://${window.location.hostname}/ws`;
-  
+
   var websocket;
   window.addEventListener('load', onLoad);
-  
-  function initWebSocket() 
-  {
+
+  function initWebSocket() {
     console.log('Trying to open a WebSocket connection...');
     websocket = new WebSocket(gateway);
-    websocket.onopen    = onOpen;
-    websocket.onclose   = onClose;
+    websocket.onopen = onOpen;
+    websocket.onclose = onClose;
     websocket.onmessage = onMessage;
   }
-  
-  function onOpen(event) 
-  {
+
+  function onOpen(event) {
     console.log('Connection opened');
     document.getElementById("ws_connect").innerHTML = "&#9989;";
   }
-  
-  function onClose(event) 
-  {
+
+  function onClose(event) {
     console.log('Connection closed');
     setTimeout(initWebSocket, 2000);
     document.getElementById("ws_connect").innerHTML = "&#10060;";
   }
-  
-  function onLoad(event) 
-  {
+
+  function onLoad(event) {
     initWebSocket();
   }
-  
-  function onMessage(event) 
-  {
+
+  function onMessage(event) {
     var obj = JSON.parse(event.data);
     console.log(event.data);
-    
-    if (obj.hasOwnProperty('uptime'))
-    {
+
+    if (obj.hasOwnProperty('uptime')) {
       document.getElementById("uptime").innerHTML = obj.uptime;
       document.getElementById("heartbeat").innerHTML = "&#x2764;";  // full heart
       lastHeartBeat = Date.now();
     }
-	
-	if (obj.hasOwnProperty('objectId'))
-    {
+
+    if (obj.hasOwnProperty('objectId')) {
       document.getElementById("objectId").value = obj.objectId;
     }
-	
-	if (obj.hasOwnProperty('groupId'))
-    {
+
+    if (obj.hasOwnProperty('groupId')) {
       document.getElementById("groupId").value = obj.groupId;
     }
-	
-	if (obj.hasOwnProperty('objectName'))
-    {
+
+    if (obj.hasOwnProperty('objectName')) {
       document.getElementById("objectName").value = obj.objectName;
-	  document.getElementById("objectNameTitle").innerHTML = obj.objectName + " Back Office";
+      document.getElementById("objectNameTitle").innerHTML = obj.objectName + " Back Office";
     }
-		
-	if (obj.hasOwnProperty('brightness'))
-    {
-      document.getElementById("brightness").value = obj.brightness;
-      document.getElementById("brightness2").innerHTML = obj.brightness;
-    }
-	
-	if (obj.hasOwnProperty('intervalScintillement'))
-    {
-      document.getElementById("intervalScintillement").value = obj.intervalScintillement;
-      document.getElementById("intervalScintillement2").innerHTML = obj.intervalScintillement;
-    }
-	
-	if (obj.hasOwnProperty('scintillementOnOff'))
-    {
-      document.getElementById("scintillementOnOff").value = obj.scintillementOnOff;
-    }
-	
-	if (obj.hasOwnProperty('nbCouleurs'))
-    {
-      document.getElementById("nbCouleurs").value = obj.nbCouleurs;
-	  createTableBoutons();
-    }
-	
-	if (obj.hasOwnProperty('couleurs'))
-    {
-      for (let i = 0; i < 5 ; i++)
-	  {
-		couleurToChange = 'couleur'+i;
-		newColor="#" + zeroPad(obj.couleurs[i][0].toString(16), 2) + zeroPad(obj.couleurs[i][1].toString(16), 2) + zeroPad(obj.couleurs[i][2].toString(16), 2);
-		document.getElementById(couleurToChange).value = newColor;
-	  }
-	  
-	  for (let i = 0; i <5; i++)
-	  {
-		labelCouleur="couleur" + i;
-		if (i < obj.nbCouleurs)
-		{
-			document.getElementById(labelCouleur).disabled = false;
-		}
-		else
-		{
-			document.getElementById(labelCouleur).disabled = true;
-			document.getElementById(labelCouleur).value = '#dddddd';
-		}
-	  }
-	  
-	  for (let i = 0; i < document.getElementById("nbSegments").value; i++)
-	  {
-	  	  for (let j = 0; j < document.getElementById("nbCouleurs").value; j++)
-		  {
-			buttonToChange = "boutonX" + i + "_c" + j;
-			labelCouleur="couleur" + j;
-			document.getElementById(buttonToChange).style.border = "2px solid " + document.getElementById(labelCouleur).value;
-		  }
-	  }
-    }
-	
-	if (obj.hasOwnProperty('indexCouleur'))
-    {
-      for (let i = 0; i < document.getElementById("nbSegments").value; i++)
-	  {
-		bgcolor = "couleur" + obj.indexCouleur[i];
-		buttonToChange = "boutonX" + i + "_c" + obj.indexCouleur[i];
-		
-		for (let j = 0; j < document.getElementById("nbCouleurs").value; j++)
-		{
-			button_cX = "boutonX" + i + "_c" + j;		
-			document.getElementById(button_cX).style.background = "#FFFFFF";
-		}
-		document.getElementById(buttonToChange).style.background = document.getElementById(bgcolor).value;
-	  }
-    }
-	
-	if (obj.hasOwnProperty('labels'))
-    {
-      for (let i = 0; i < document.getElementById("nbSegments").value; i++)
-	  {
-		labelToSet = "label" + i;
-		document.getElementById(labelToSet).value = obj.labels[i];		
-	  }
-	}
-	
-	if (obj.hasOwnProperty('nbSegments'))
-    {
+
+    if (obj.hasOwnProperty('nbSegments')) {
       document.getElementById("nbSegments").value = obj.nbSegments;
-	  document.getElementById("activeLeds").innerHTML = obj.nbSegments * document.getElementById("ledParSegment").value;
+      document.getElementById("activeLeds").innerHTML = obj.nbSegments * document.getElementById("ledParSegment").value;
     }
-	
-	if (obj.hasOwnProperty('nbColonnes'))
-    {
+
+    if (obj.hasOwnProperty('nbColonnes')) {
       document.getElementById("nbColonnes").value = obj.nbColonnes;
     }
 	
-	if (obj.hasOwnProperty('ledParSegment'))
-    {
-      document.getElementById("ledParSegment").value = obj.ledParSegment;
-	  document.getElementById("activeLeds").innerHTML = document.getElementById("nbSegments").value * obj.ledParSegment;
+	if (obj.hasOwnProperty('ledMatrixType')) {
+      document.getElementById("ledMatrixType").value = obj.ledMatrixType;
+	  updateMatrixType();
     }
-	
-	if (obj.hasOwnProperty('statutActuel'))
-    {
+
+    if (obj.hasOwnProperty('ledParSegment')) {
+      document.getElementById("ledParSegment").value = obj.ledParSegment;
+      document.getElementById("activeLeds").innerHTML = document.getElementById("nbSegments").value * obj.ledParSegment;
+    }
+
+    if (obj.hasOwnProperty('nbCouleurs')) {
+      document.getElementById("nbCouleurs").value = obj.nbCouleurs;
+
+      console.log("nbCouleurs createTableBoutons()");
+      createTableBoutons();
+    }
+
+    if (obj.hasOwnProperty('brightness')) {
+      document.getElementById("brightness").value = obj.brightness;
+      document.getElementById("brightness2").innerHTML = obj.brightness;
+    }
+
+    if (obj.hasOwnProperty('intervalScintillement')) {
+      document.getElementById("intervalScintillement").value = obj.intervalScintillement;
+      document.getElementById("intervalScintillement2").innerHTML = obj.intervalScintillement;
+    }
+
+    if (obj.hasOwnProperty('scintillementOnOff')) {
+      document.getElementById("scintillementOnOff").value = obj.scintillementOnOff;
+    }
+
+
+
+    if (obj.hasOwnProperty('couleurs')) {
+      for (let i = 0; i < 5; i++) {
+        couleurToChange = 'couleur' + i;
+        newColor = "#" + zeroPad(obj.couleurs[i][0].toString(16), 2) + zeroPad(obj.couleurs[i][1].toString(16), 2) + zeroPad(obj.couleurs[i][2].toString(16), 2);
+        document.getElementById(couleurToChange).value = newColor;
+      }
+
+      for (let i = 0; i < 5; i++) {
+        labelCouleur = "couleur" + i;
+        if (i < obj.nbCouleurs) {
+          document.getElementById(labelCouleur).disabled = false;
+        }
+        else {
+          document.getElementById(labelCouleur).disabled = true;
+          document.getElementById(labelCouleur).value = '#dddddd';
+        }
+      }
+
+      for (let i = 0; i < document.getElementById("nbSegments").value; i++) {
+        for (let j = 0; j < document.getElementById("nbCouleurs").value; j++) {
+          buttonToChange = "boutonX" + i + "_c" + j;
+          labelCouleur = "couleur" + j;
+          document.getElementById(buttonToChange).style.border = "2px solid " + document.getElementById(labelCouleur).value;
+        }
+      }
+    }
+
+    if (obj.hasOwnProperty('indexCouleur')) {
+      for (let i = 0; i < document.getElementById("nbSegments").value; i++) {
+        bgcolor = "couleur" + obj.indexCouleur[i];
+        buttonToChange = "boutonX" + i + "_c" + obj.indexCouleur[i];
+
+        for (let j = 0; j < document.getElementById("nbCouleurs").value; j++) {
+          button_cX = "boutonX" + i + "_c" + j;
+          document.getElementById(button_cX).style.background = "#FFFFFF";
+        }
+        document.getElementById(buttonToChange).style.background = document.getElementById(bgcolor).value;
+      }
+    }
+
+    if (obj.hasOwnProperty('labels')) {
+      for (let i = 0; i < document.getElementById("nbSegments").value; i++) {
+        labelToSet = "label" + i;
+        document.getElementById(labelToSet).value = obj.labels[i];
+      }
+    }
+
+
+
+    if (obj.hasOwnProperty('statutActuel')) {
       document.getElementById("statutSerrure2").innerHTML = getStatutValue(obj.statutActuel);
     }
-	
-	function getStatutValue(x)
-	{
-		switch(arguments[0]) 
-		{
-		  case 5:
-			return "BLINK";
-			break;
-			
-		  case 0:
-			return "ACTIF";
-			break;
-		
-		  default:
-			return "";
-		}
-	}
-	
-	if (obj.hasOwnProperty('apName'))
-    {
-      document.getElementById("apName").value = obj.apName;
-	  document.getElementById("apNameTitle").innerHTML = obj.apName + " Network config";
+
+    function getStatutValue(x) {
+      switch (arguments[0]) {
+        case 5:
+          return "BLINK";
+          break;
+
+        case 0:
+          return "ACTIF";
+          break;
+
+        default:
+          return "";
+      }
     }
-	
-	if (obj.hasOwnProperty('apPassword') && obj.apPassword != "")
-    {
+
+    if (obj.hasOwnProperty('apName')) {
+      document.getElementById("apName").value = obj.apName;
+      document.getElementById("apNameTitle").innerHTML = obj.apName + " Network config";
+    }
+
+    if (obj.hasOwnProperty('apPassword') && obj.apPassword != "") {
       document.getElementById("apPassword").value = obj.apPassword;
     }
-	
-	if (obj.hasOwnProperty('apIP'))
-    {
+
+    if (obj.hasOwnProperty('apIP')) {
       document.getElementById("apIP").value = obj.apIP[0] + "." + obj.apIP[1] + "." + obj.apIP[2] + "." + obj.apIP[3];
     }
-	
-	if (obj.hasOwnProperty('apNetMsk'))
-    {
+
+    if (obj.hasOwnProperty('apNetMsk')) {
       document.getElementById("apNetMsk").value = obj.apNetMsk[0] + "." + obj.apNetMsk[1] + "." + obj.apNetMsk[2] + "." + obj.apNetMsk[3];
     }
   }
-  
-  function sendNewValue(name, val, string) 
-  {
-    if (string)
-	{
-		console.log("{\"new_"+ name + "\":\"" + val + "\"}");
-		websocket.send("{\"new_"+ name + "\":\"" + val + "\"}");
-	}
-	else
-	{
-		console.log("{\"new_"+ name + "\":" + val + "}");
-		websocket.send("{\"new_"+ name + "\":" + val + "}");
-	}
-	
-	if (name=="brightness")
-    {
+
+  function sendNewValue(name, val, string) {
+    if (string) {
+      console.log("{\"new_" + name + "\":\"" + val + "\"}");
+      websocket.send("{\"new_" + name + "\":\"" + val + "\"}");
+    }
+    else {
+      console.log("{\"new_" + name + "\":" + val + "}");
+      websocket.send("{\"new_" + name + "\":" + val + "}");
+    }
+
+    if (name == "brightness") {
       document.getElementById("brightness2").innerHTML = val;
     }
-	
-	if (name=="delaiBlocage")
-    {
+
+    if (name == "delaiBlocage") {
       document.getElementById("delaiBlocage").innerHTML = val;
     }
   }
-  
-  function sendNewLabel(name, index, value) 
-  {
-    console.log("{\"new_"+ name + "\":[" + index + ",\"" + value + "\"]}");
-	websocket.send("{\"new_"+ name + "\":[" + index + ",\"" + value + "\"]}");
+
+  function sendNewLabel(name, index, value) {
+    console.log("{\"new_" + name + "\":[" + index + ",\"" + value + "\"]}");
+    websocket.send("{\"new_" + name + "\":[" + index + ",\"" + value + "\"]}");
   }
-  
-  
-  function updateScintillement()
-  {
-	if (document.getElementById("scintillementOnOff").value == 0)
-	{
-		document.getElementById("intervalScintillement").disabled = true;
-	}
-	else
-	{
-		document.getElementById("intervalScintillement").disabled = false;
-	}
-  }
-  
-  document.onreadystatechange = function ()
-  {
-    if (document.readyState === "complete") {
-      createTableBoutons();
+
+
+  function updateScintillement() {
+    if (document.getElementById("scintillementOnOff").value == 0) {
+      document.getElementById("intervalScintillement").disabled = true;
+    }
+    else {
+      document.getElementById("intervalScintillement").disabled = false;
     }
   }
   
-  function createTableBoutons()
-  {
-	aTable = document.createElement("table");	
-	
-	var row = null;
-	
-	for (let i = 0; i < parseInt(document.getElementById("nbSegments").value); i++)
-	{
-		nbRow = i % parseInt(document.getElementById("nbColonnes").value);
-		if (nbRow == 0)
-		{
-			row = aTable.insertRow();
-		}		
-		
-		cell = row.insertCell();
-		tdToInsert = "";
-		tdToInsert = tdToInsert + "<input type=\"text\" id=\"label" + i + "\" style=\"text-align:center;font-size:18px;\" onchange=\"sendNewLabel('label'," + i + ",this.value);\"><br>";
-		
-			
-		for (let j = 0; j < document.getElementById("nbCouleurs").value; j++)
-	    {
-			tdToInsert = tdToInsert + "<input type=\"button\" id=\"boutonX" + i + "_c" + j + "\" value=\"&nbsp;&nbsp;&nbsp;&nbsp;\" class=\"colorButton\" onclick=\"sendNewValue('bouton','[" + i + "," + j + "]', false);\"  />"
-		}
-		
-		cell.innerHTML = tdToInsert;
-	}
-	
-	var element =  document.getElementById('tableBoutons');
-	if (typeof(element) != 'undefined' && element != null)
-	{
-	  document.getElementById("tableBoutons").innerHTML = "";
-	}	
-	document.getElementById("tableBoutons").appendChild(aTable);
-	console.log("tableBoutons created");
+  function updateMatrixType() {
+	if (document.getElementById("ledMatrixType").value == 0) {
+      document.getElementById("ledMatrixType2").innerHTML = "linear";
+    }
+    else {
+      document.getElementById("ledMatrixType2").innerHTML = "snake";
+    }
   }
-  
-  </script>  
-	<body>
-	<table>
+
+  document.onreadystatechange = function () {
+    if (document.readyState == "complete") {
+      createTableBoutons();
+    }
+  }
+
+  function createTableBoutons() {
+    aTable = document.createElement("table");
+
+    var row = null;
+
+    for (let i = 0; i < parseInt(document.getElementById("nbSegments").value); i++) {
+      nbRow = i % parseInt(document.getElementById("nbColonnes").value);
+      if (nbRow == 0) {
+        row = aTable.insertRow();
+      }
+
+      cell = row.insertCell();
+      tdToInsert = "";
+      tdToInsert = tdToInsert + "<input type=\"text\" id=\"label" + i + "\" style=\"text-align:center;font-size:18px;\" onchange=\"sendNewLabel('label'," + i + ",this.value);\"><br>";
+
+      for (let j = 0; j < document.getElementById("nbCouleurs").value; j++) {
+        tdToInsert = tdToInsert + "<input type=\"button\" id=\"boutonX" + i + "_c" + j + "\" value=\"&nbsp;&nbsp;&nbsp;&nbsp;\" class=\"colorButton\" onclick=\"sendNewValue('bouton','[" + i + "," + j + "]', false);\"  />"
+      }
+
+      cell.innerHTML = tdToInsert;
+    }
+
+    if (parseInt(document.getElementById("nbSegments").value) == null) {
+      console.log("ATTENTION, nbSegments = 0");
+    }
+
+    var element = document.getElementById('tableBoutons');
+    if (typeof (element) != 'undefined' && element != null) {
+      document.getElementById("tableBoutons").innerHTML = "";
+    }
+    document.getElementById("tableBoutons").appendChild(aTable);
+
+    console.log("tableBoutons created");
+  }
+
+</script>
+
+<body>
+  <table>
     <tr>
-      <td colspan="2"><h2><span id="objectNameTitle"></span></h2></td>
+      <td colspan="2">
+        <h2><span id="objectNameTitle"></span></h2>
+      </td>
     </tr>
     <tr>
       <td>Object name </td>
-      <td><input type="text" id="objectName" name="objectName" onchange="sendNewValue('objectName',document.getElementById('objectName').value, true);"> &nbsp; &nbsp; &nbsp; &nbsp; 20 characters max</td>
+      <td><input type="text" id="objectName" name="objectName"
+          onchange="sendNewValue('objectName',document.getElementById('objectName').value, true);"> &nbsp; &nbsp; &nbsp;
+        &nbsp; 20 characters max</td>
     </tr>
     <tr>
       <td>Object ID </td>
-      <td><input type="number" id="objectId" name="objectId" min="1" max="1000" style="text-align: center;width:70px;" onchange="sendNewValue('objectId',document.getElementById('objectId').value, false);"> &nbsp; &nbsp; &nbsp; &nbsp; 1 - 1000</td>
+      <td><input type="number" id="objectId" name="objectId" min="1" max="1000" style="text-align: center;width:70px;"
+          onchange="sendNewValue('objectId',document.getElementById('objectId').value, false);"> &nbsp; &nbsp; &nbsp;
+        &nbsp; 1 - 1000</td>
     </tr>
-	<tr>
+    <tr>
       <td>Group ID </td>
-      <td><input type="number" id="groupId" name="groupId" min="1" max="1000" style="text-align: center;width:70px;" onchange="sendNewValue('groupId',document.getElementById('groupId').value, false);"> &nbsp; &nbsp; &nbsp; &nbsp; 1 - 1000</td>
+      <td><input type="number" id="groupId" name="groupId" min="1" max="1000" style="text-align: center;width:70px;"
+          onchange="sendNewValue('groupId',document.getElementById('groupId').value, false);"> &nbsp; &nbsp; &nbsp;
+        &nbsp; 1 - 1000</td>
     </tr>
-	<tr>
+    <tr>
       <td>nbColonnes </td>
-      <td><input type="number" id="nbColonnes" name="nbColonnes" min="1" max="10" style="text-align: center;width:70px;" onchange="sendNewValue('nbColonnes',this.value, false);"> &nbsp; &nbsp; &nbsp; &nbsp; 1 - 5</td>
+      <td><input type="number" id="nbColonnes" name="nbColonnes" min="1" max="10" style="text-align: center;width:70px;"
+          onchange="sendNewValue('nbColonnes',this.value, false);"> &nbsp; &nbsp; &nbsp; &nbsp; 1 - 5</td>
     </tr>
     <tr>
       <td>nbSegments </td>
-      <td><input type="number" id="nbSegments" name="nbSegments" min="1" max="20" style="text-align: center;width:70px;" onchange="sendNewValue('nbSegments',this.value, false);"> &nbsp; &nbsp; &nbsp; &nbsp; 1 - 20</td>
+      <td><input type="number" id="nbSegments" name="nbSegments" min="1" max="20" style="text-align: center;width:70px;"
+          onchange="sendNewValue('nbSegments',this.value, false);"> &nbsp; &nbsp; &nbsp; &nbsp; 1 - 20</td>
     </tr>
-	<tr>
+    <tr>
       <td>ledParSegment </td>
-      <td><input type="number" id="ledParSegment" name="ledParSegment" min="1" max="5" style="text-align: center;width:70px;" onchange="sendNewValue('ledParSegment',this.value, false);"> &nbsp; &nbsp; &nbsp; &nbsp; 1 - 5</td>
+      <td><input type="number" id="ledParSegment" name="ledParSegment" min="1" max="5"
+          style="text-align: center;width:70px;" onchange="sendNewValue('ledParSegment',this.value, false);"> &nbsp;
+        &nbsp; &nbsp; &nbsp; 1 - 5</td>
     </tr>
     <tr>
       <td>ActiveLeds </td>
@@ -355,71 +359,99 @@
     </tr>
     <tr>
       <td>Brightness : <span id="brightness2"></span></td>
-	  <td><input class="enabled" id="brightness" name="brightness" type="range" min="0" max="255" step="5" onChange="sendNewValue('brightness',document.getElementById('brightness').value, false);"></td>
+      <td><input class="enabled" id="brightness" name="brightness" type="range" min="0" max="255" step="5"
+          onChange="sendNewValue('brightness',document.getElementById('brightness').value, false);"></td>
     </tr>
-	<tr>
+    <tr>
       <td>Scintillement : <span id="intervalScintillement2"></span></td>
-		<td>
-			OFF <input class="enabled" id="scintillementOnOff" name="scintillementOnOff" type="range" style="width:30px;" min="0" max="1" step="1" onChange="sendNewValue('scintillementOnOff',this.value, false); updateScintillement();"> ON
-			<br>
-			<input class="enabled" id="intervalScintillement" name="intervalScintillement" type="range" min="0" max="100" step="1" onChange="sendNewValue('intervalScintillement',this.value, false);">
-		</td>
+      <td>
+        OFF <input class="enabled" id="scintillementOnOff" name="scintillementOnOff" type="range" style="width:30px;"
+          min="0" max="1" step="1"
+          onChange="sendNewValue('scintillementOnOff',this.value, false); updateScintillement();"> ON
+        <br>
+        <input class="enabled" id="intervalScintillement" name="intervalScintillement" type="range" min="0" max="100"
+          step="1" onChange="sendNewValue('intervalScintillement',this.value, false);">
+      </td>
     </tr>
 	<tr>
+      <td>ledMatrixType  : <span id="ledMatrixType2"></span></td>
+      <td>
+        LINEAR <input class="enabled" id="ledMatrixType" name="ledMatrixType" type="range" style="width:30px;"
+          min="0" max="1" step="1"
+          onChange="sendNewValue('ledMatrixType',this.value, false); updateMatrixType();"> SNAKE
+      </td>
+    </tr>
+    <tr>
       <td>Nombre couleurs </td>
-      <td><input type="number" id="nbCouleurs" name="nbCouleurs" min="1" max="5" style="text-align: center;width:70px;" onchange="sendNewValue('nbCouleurs',this.value, false);"> &nbsp; &nbsp; &nbsp; &nbsp; 1 - 5</td>
+      <td><input type="number" id="nbCouleurs" name="nbCouleurs" min="1" max="5" style="text-align: center;width:70px;"
+          onchange="sendNewValue('nbCouleurs',this.value, false);"> &nbsp; &nbsp; &nbsp; &nbsp; 1 - 5</td>
     </tr>
-	<table>
-	<tr>
-      <td>Couleur 1</td>
-	  <td>Couleur 2</td>
-	  <td>Couleur 3</td>
-	  <td>Couleur 4</td>
-	  <td>Couleur 5</td>
-	</tr>
-	<tr>
-	  <td><input type="color" id="couleur0" name="couleur0" onchange="sendNewValue('couleurs','[0,&#34;'+this.value+'&#34;]', false);"></td>
-	  <td><input type="color" id="couleur1" name="couleur1" onchange="sendNewValue('couleurs','[1,&#34;'+this.value+'&#34;]', false);"></td>
-	  <td><input type="color" id="couleur2" name="couleur2" onchange="sendNewValue('couleurs','[2,&#34;'+this.value+'&#34;]', false);"></td>
-	  <td><input type="color" id="couleur3" name="couleur3" onchange="sendNewValue('couleurs','[3,&#34;'+this.value+'&#34;]', false);"></td>
-	  <td><input type="color" id="couleur4" name="couleur4" onchange="sendNewValue('couleurs','[4,&#34;'+this.value+'&#34;]', false);"></td>
-	</tr>
-	</table>
-	</table>
-	
-	<!--create tableBoutons with function createTableBoutonss()-->
-	<div id="tableBoutons"></div>
-	
-	<table>	
-	<tr>
+    <table>
+      <tr>
+        <td>Couleur 1</td>
+        <td>Couleur 2</td>
+        <td>Couleur 3</td>
+        <td>Couleur 4</td>
+        <td>Couleur 5</td>
+      </tr>
+      <tr>
+        <td><input type="color" id="couleur0" name="couleur0"
+            onchange="sendNewValue('couleurs','[0,&#34;'+this.value+'&#34;]', false);"></td>
+        <td><input type="color" id="couleur1" name="couleur1"
+            onchange="sendNewValue('couleurs','[1,&#34;'+this.value+'&#34;]', false);"></td>
+        <td><input type="color" id="couleur2" name="couleur2"
+            onchange="sendNewValue('couleurs','[2,&#34;'+this.value+'&#34;]', false);"></td>
+        <td><input type="color" id="couleur3" name="couleur3"
+            onchange="sendNewValue('couleurs','[3,&#34;'+this.value+'&#34;]', false);"></td>
+        <td><input type="color" id="couleur4" name="couleur4"
+            onchange="sendNewValue('couleurs','[4,&#34;'+this.value+'&#34;]', false);"></td>
+      </tr>
+    </table>
+  </table>
+
+  <!--create tableBoutons with function createTableBoutonss()-->
+  <div id="tableBoutons"></div>
+
+  <table>
+    <tr>
       <td>statut Panneau : <br><span id="statutSerrure2"></span></td>
       <td>
-		<button onclick="sendNewValue('statutActuel',0, false);">ACTIF</button>
-		<button onclick="sendNewValue('statutActuel',5);">BLINK</button>
-	  </td>
+        <button onclick="sendNewValue('statutActuel',0, false);">ACTIF</button>
+        <button onclick="sendNewValue('statutActuel',5);">BLINK</button>
+      </td>
     </tr>
-	</table>
-	<table width=600>
-	<tr>
-      <td colspan="2"><h2><span id="apNameTitle"></span></h2></td>
+  </table>
+  <table width=600>
+    <tr>
+      <td colspan="2">
+        <h2><span id="apNameTitle"></span></h2>
+      </td>
     </tr>
     <tr>
       <td>AP name </td>
-      <td><input type="text" id="apName" name="apName" onchange="sendNewValue('apName',document.getElementById('apName').value, true);"> &nbsp; &nbsp; &nbsp; &nbsp; 20 UPPERCASE characters max</td>
+      <td><input type="text" id="apName" name="apName"
+          onchange="sendNewValue('apName',document.getElementById('apName').value, true);"> &nbsp; &nbsp; &nbsp; &nbsp;
+        20 UPPERCASE characters max</td>
     </tr>
-	<tr>
+    <tr>
       <td>AP password </td>
-      <td><input type="text" id="apPasword" name="apPasword" onchange="sendNewValue('apPasword',document.getElementById('apPasword').value, true);"> &nbsp; &nbsp; &nbsp; &nbsp; vide ou min 8 - max 20 characters</td>
+      <td><input type="text" id="apPasword" name="apPasword"
+          onchange="sendNewValue('apPasword',document.getElementById('apPasword').value, true);"> &nbsp; &nbsp; &nbsp;
+        &nbsp; vide ou min 8 - max 20 characters</td>
     </tr>
-	<tr>
+    <tr>
       <td>AP IP </td>
-      <td><input type="text" id="apIP" name="apIP" onchange="sendNewValue('apIP',document.getElementById('apIP').value, true);"> &nbsp; !! restart obligatoire apres modif !!</td>
+      <td><input type="text" id="apIP" name="apIP"
+          onchange="sendNewValue('apIP',document.getElementById('apIP').value, true);"> &nbsp; !! restart obligatoire
+        apres modif !!</td>
     </tr>
-	<tr>
+    <tr>
       <td>AP netmask </td>
-      <td><input type="text" id="apNetMsk" name="apNetMsk" onchange="sendNewValue('apNetMsk',document.getElementById('apNetMsk').value, true);"> &nbsp; !! restart obligatoire apres modif !!</td>
+      <td><input type="text" id="apNetMsk" name="apNetMsk"
+          onchange="sendNewValue('apNetMsk',document.getElementById('apNetMsk').value, true);"> &nbsp; !! restart
+        obligatoire apres modif !!</td>
     </tr>
-	<tr>
+    <tr>
       <td>WebSocket Connexion </td>
       <td><span id="ws_connect">&#10060;</span></td>
     </tr>
@@ -429,28 +461,29 @@
     </tr>
     <tr>
       <td>Heartbeat </td>
-      <td ><span style="color:red; font-weight:bold; font-size:20px;" id="heartbeat">&#x2620;</span></td>
+      <td><span style="color:red; font-weight:bold; font-size:20px;" id="heartbeat">&#x2620;</span></td>
     </tr>
-	<tr>
+    <tr>
       <td>BLINK esp8266</td>
       <td><button onclick="sendNewValue('statutActuel',5);">BLINK</button></td>
     </tr>
-	<tr>
+    <tr>
       <td>Default Object config</td>
       <td><button onclick="sendNewValue('defaultObjectConfig',1, false);">DEFAULT OBJECT CONFIG</button></td>
     </tr>
-	<tr>
+    <tr>
       <td>Default Network config</td>
       <td><button onclick="sendNewValue('defaultNetworkConfig',1, false);">DEFAULT NETWORK CONFIG</button></td>
     </tr>
-	<tr>
+    <tr>
       <td>Refresh config</td>
       <td><button onclick="sendNewValue('refresh',1);">REFRESH</button></td>
     </tr>
-	<tr>
+    <tr>
       <td>RESTART esp8266</td>
       <td><button onclick="sendNewValue('restart',1);">RESTART</button></td>
     </tr>
-	</table>	
-	</body>
+  </table>
+</body>
+
 </html>

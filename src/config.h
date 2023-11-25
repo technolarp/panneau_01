@@ -30,6 +30,7 @@ class M_config
     uint8_t nbColonnes;
     uint8_t nbSegments;
     uint8_t ledParSegment;
+    uint8_t ledMatrixType;
 
     uint8_t nbCouleurs;
 
@@ -91,6 +92,7 @@ class M_config
       objectConfig.nbColonnes = doc["nbColonnes"];
       objectConfig.nbSegments = doc["nbSegments"];
       objectConfig.ledParSegment = doc["ledParSegment"];
+      objectConfig.ledMatrixType = doc["ledMatrixType"];
       objectConfig.activeLeds = objectConfig.nbSegments * objectConfig.ledParSegment;
       
       objectConfig.brightness = doc["brightness"];
@@ -178,6 +180,7 @@ class M_config
     doc["nbColonnes"] = objectConfig.nbColonnes;
     doc["ledParSegment"] = objectConfig.ledParSegment;
     doc["nbSegments"] = objectConfig.nbSegments;
+    doc["ledMatrixType"] = objectConfig.ledMatrixType;
     
     doc["intervalScintillement"] = objectConfig.intervalScintillement;
     doc["scintillementOnOff"] = objectConfig.scintillementOnOff;
@@ -233,6 +236,7 @@ class M_config
     objectConfig.nbSegments = 4;
     objectConfig.nbColonnes = 2;
     objectConfig.ledParSegment = 2; 
+    objectConfig.ledMatrixType = 0; 
     
     objectConfig.intervalScintillement = 50;
     objectConfig.scintillementOnOff = 0;

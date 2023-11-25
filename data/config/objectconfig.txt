@@ -14,5 +14,6 @@
 	"statutActuel":0,
 	"statutPrecedent":0,
 	"labels": ["LABEL 01","LABEL 02","LABEL 03","LABEL 04","LABEL 05","LABEL 06","LABEL 07","LABEL 08","LABEL 09","LABEL 10","LABEL 11","LABEL 12","LABEL 13","LABEL 14","LABEL 15","LABEL 16","LABEL 17","LABEL 18","LABEL 19","LABEL 20"],
-	"indexCouleur": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+	"indexCouleur": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	"ledMatrixType":0
 }
