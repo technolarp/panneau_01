@@ -806,7 +806,7 @@ void panneauActif()
     
     if (aConfig.objectConfig.ledMatrixType==0)
     {
-      // led strip is linear
+      // led matrix is linear
       for (uint8_t i=0;i<aConfig.objectConfig.activeLeds;i++)
       {
         aFastled.indexMatrix[i]=i;
@@ -814,15 +814,17 @@ void panneauActif()
     }
     else
     {
-      // led strip is in snake shape
+      // led matrix is in snake shape
       for (uint8_t i=0;i<nbLigne;i++)
       {
         for (uint8_t j=0;j<ledParLigne;j++)
         {
+          // even line, increase indexMatrix from left to right
           if (i%2==0)
           {
             aFastled.indexMatrix[i*ledParLigne+j]=i*ledParLigne+j;
           }
+          // odd line, increase from indexMatrix right to left
           else
           {
             aFastled.indexMatrix[i*ledParLigne+j]=i*ledParLigne+ledParLigne-1-j;
@@ -831,6 +833,7 @@ void panneauActif()
       }
     }
     
+    // for each led per segment, apply the new color
     for (uint8_t i=0;i<aConfig.objectConfig.nbSegments;i++)
     {
       for (uint8_t j=0;j<aConfig.objectConfig.ledParSegment;j++)
@@ -840,6 +843,7 @@ void panneauActif()
       }
     }
 
+    // update html page trough the websocket
     sendStatut();
   }
 }
