@@ -106,10 +106,9 @@
     if (obj.hasOwnProperty('nbColonnes')) {
       document.getElementById("nbColonnes").value = obj.nbColonnes;
     }
-	
-	if (obj.hasOwnProperty('ledMatrixType')) {
-      document.getElementById("ledMatrixType").value = obj.ledMatrixType;
-	  updateMatrixType();
+
+    if (obj.hasOwnProperty('ledSnakeMatrix')) {
+      document.getElementById("ledSnakeMatrix").value = obj.ledSnakeMatrix;
     }
 
     if (obj.hasOwnProperty('ledParSegment')) {
@@ -137,8 +136,6 @@
     if (obj.hasOwnProperty('scintillementOnOff')) {
       document.getElementById("scintillementOnOff").value = obj.scintillementOnOff;
     }
-
-
 
     if (obj.hasOwnProperty('couleurs')) {
       for (let i = 0; i < 5; i++) {
@@ -187,8 +184,6 @@
       }
     }
 
-
-
     if (obj.hasOwnProperty('statutActuel')) {
       document.getElementById("statutSerrure2").innerHTML = getStatutValue(obj.statutActuel);
     }
@@ -228,8 +223,8 @@
 
   function sendNewValue(name, val, string) {
     if (string) {
-      console.log("{\"new_" + name + "\":\"" + val + "\"}");
-      websocket.send("{\"new_" + name + "\":\"" + val + "\"}");
+      console.log("{\"new_" + name + "\":\"" + val.replaceAll("\"", "\\\"") + "\"}");
+      websocket.send("{\"new_" + name + "\":\"" + val.replaceAll("\"", "\\\"") + "\"}");
     }
     else {
       console.log("{\"new_" + name + "\":" + val + "}");
@@ -257,15 +252,6 @@
     }
     else {
       document.getElementById("intervalScintillement").disabled = false;
-    }
-  }
-  
-  function updateMatrixType() {
-	if (document.getElementById("ledMatrixType").value == 0) {
-      document.getElementById("ledMatrixType2").innerHTML = "linear";
-    }
-    else {
-      document.getElementById("ledMatrixType2").innerHTML = "snake";
     }
   }
 
@@ -373,12 +359,11 @@
           step="1" onChange="sendNewValue('intervalScintillement',this.value, false);">
       </td>
     </tr>
-	<tr>
-      <td>ledMatrixType  : <span id="ledMatrixType2"></span></td>
+    <tr>
+      <td>ledSnakeMatrix : </span></td>
       <td>
-        LINEAR <input class="enabled" id="ledMatrixType" name="ledMatrixType" type="range" style="width:30px;"
-          min="0" max="1" step="1"
-          onChange="sendNewValue('ledMatrixType',this.value, false); updateMatrixType();"> SNAKE
+        LINEAR <input class="enabled" id="ledSnakeMatrix" name="ledSnakeMatrix" type="range" style="width:30px;" min="0"
+          max="1" step="1" onChange="sendNewValue('ledSnakeMatrix',this.value, false);"> SNAKE
       </td>
     </tr>
     <tr>
