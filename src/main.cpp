@@ -306,6 +306,7 @@ void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType 
     handleWebSocketMessage(arg, data, len);
     break;
 
+  case WS_EVT_PING:
   case WS_EVT_PONG:
   case WS_EVT_ERROR:
     break;
@@ -327,7 +328,7 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len)
 
 void handleWebsocketBuffer()
 {
-  DynamicJsonDocument doc(JSONBUFFERSIZE);
+  JsonDocument doc;
 
   DeserializationError error = deserializeJson(doc, bufferReceiveWebsocket);
   if (error)
@@ -343,7 +344,7 @@ void handleWebsocketBuffer()
     bool sendNetworkConfigFlag = false;
 
     // modif object config
-    if (doc.containsKey("new_objectName"))
+    if (doc["new_objectName"].is<const char*>())
     {
       strlcpy(aConfig.objectConfig.objectName,
               doc["new_objectName"],
@@ -356,7 +357,7 @@ void handleWebsocketBuffer()
       sendObjectConfigFlag = true;
     }
 
-    if (doc.containsKey("new_objectId"))
+    if (doc["new_objectId"].is<unsigned short>())
     {
       uint16_t tmpValeur = doc["new_objectId"];
       aConfig.objectConfig.objectId = checkValeur(tmpValeur, 1, 1000);
@@ -365,7 +366,7 @@ void handleWebsocketBuffer()
       sendObjectConfigFlag = true;
     }
 
-    if (doc.containsKey("new_groupId"))
+    if (doc["new_groupId"].is<unsigned short>())
     {
       uint16_t tmpValeur = doc["new_groupId"];
       aConfig.objectConfig.groupId = checkValeur(tmpValeur, 1, 1000);
@@ -374,7 +375,7 @@ void handleWebsocketBuffer()
       sendObjectConfigFlag = true;
     }
 
-    if (doc.containsKey("new_brightness"))
+    if (doc["new_brightness"].is<unsigned short>())
     {
       uint16_t tmpValeur = doc["new_brightness"];
       aConfig.objectConfig.brightness = checkValeur(tmpValeur, 0, 255);
@@ -385,7 +386,7 @@ void handleWebsocketBuffer()
       sendObjectConfigFlag = true;
     }
 
-    if (doc.containsKey("new_activeLeds"))
+    if (doc["new_activeLeds"].is<unsigned short>())
     {
       FastLED.clear();
 
@@ -397,7 +398,7 @@ void handleWebsocketBuffer()
       sendObjectConfigFlag = true;
     }
 
-    if (doc.containsKey("new_intervalScintillement"))
+    if (doc["new_intervalScintillement"].is<unsigned short>())
     {
       uint16_t tmpValeur = doc["new_intervalScintillement"];
       aConfig.objectConfig.intervalScintillement = checkValeur(tmpValeur, 0, 1000);
@@ -407,7 +408,7 @@ void handleWebsocketBuffer()
       sendObjectConfigFlag = true;
     }
 
-    if (doc.containsKey("new_scintillementOnOff"))
+    if (doc["new_scintillementOnOff"].is<unsigned short>())
     {
       uint16_t tmpValeur = doc["new_scintillementOnOff"];
       aConfig.objectConfig.scintillementOnOff = checkValeur(tmpValeur, 0, 1);
@@ -422,7 +423,7 @@ void handleWebsocketBuffer()
       sendObjectConfigFlag = true;
     }
 
-    if (doc.containsKey("new_nbColonnes"))
+    if (doc["new_nbColonnes"].is<unsigned short>())
     {
       uint16_t tmpValeur = doc["new_nbColonnes"];
       aConfig.objectConfig.nbColonnes = checkValeur(tmpValeur, 1, 5);
@@ -431,7 +432,7 @@ void handleWebsocketBuffer()
       sendObjectConfigFlag = true;
     }
 
-    if (doc.containsKey("new_nbSegments"))
+    if (doc["new_nbSegments"].is<unsigned short>())
     {
       uint16_t tmpValeur = doc["new_nbSegments"];
       aConfig.objectConfig.nbSegments = checkValeur(tmpValeur, 1, SIZE_INDEX_COULEURS);
@@ -445,7 +446,7 @@ void handleWebsocketBuffer()
       sendObjectConfigFlag = true;
     }
 
-    if (doc.containsKey("new_ledParSegment"))
+    if (doc["new_ledParSegment"].is<unsigned short>())
     {
       uint16_t tmpValeur = doc["new_ledParSegment"];
       aConfig.objectConfig.ledParSegment = checkValeur(tmpValeur, 1, 5);
@@ -459,7 +460,7 @@ void handleWebsocketBuffer()
       sendObjectConfigFlag = true;
     }
 
-    if (doc.containsKey("new_ledSnakeMatrix"))
+    if (doc["new_ledSnakeMatrix"].is<unsigned short>())
     {
       uint16_t tmpValeur = doc["new_ledSnakeMatrix"];
       aConfig.objectConfig.ledSnakeMatrix = checkValeur(tmpValeur, 0, 1);
@@ -470,7 +471,7 @@ void handleWebsocketBuffer()
       sendObjectConfigFlag = true;
     }
 
-    if (doc.containsKey("new_indexCouleur"))
+    if (doc["new_indexCouleur"].is<JsonVariant>())
     {
       JsonArray newIndexCouleur = doc["new_indexCouleur"];
 
@@ -492,7 +493,7 @@ void handleWebsocketBuffer()
       uneFois = true;
     }
 
-    if (doc.containsKey("new_bouton"))
+    if (doc["new_bouton"].is<JsonVariant>())
     {
       JsonArray newBouton = doc["new_bouton"];
 
@@ -506,7 +507,7 @@ void handleWebsocketBuffer()
       uneFois = true;
     }
 
-    if (doc.containsKey("new_nbCouleurs"))
+    if (doc["new_nbCouleurs"].is<unsigned short>())
     {
       uint16_t tmpValeur = doc["new_nbCouleurs"];
       aConfig.objectConfig.nbCouleurs = checkValeur(tmpValeur, 1, 5);
@@ -520,7 +521,7 @@ void handleWebsocketBuffer()
       sendObjectConfigFlag = true;
     }
 
-    if (doc.containsKey("new_couleurs"))
+    if (doc["new_couleurs"].is<JsonVariant>())
     {
       JsonArray newCouleur = doc["new_couleurs"];
 
@@ -541,7 +542,7 @@ void handleWebsocketBuffer()
       sendObjectConfigFlag = true;
     }
 
-    if (doc.containsKey("new_label"))
+    if (doc["new_label"].is<JsonVariant>())
     {
       JsonArray newLabel = doc["new_label"];
 
@@ -558,7 +559,7 @@ void handleWebsocketBuffer()
       sendObjectConfigFlag = true;
     }
 
-    if (doc.containsKey("new_statutActuel"))
+    if (doc["new_statutActuel"].is<unsigned short>())
     {
       aConfig.objectConfig.statutPrecedent = aConfig.objectConfig.statutActuel;
 
@@ -572,7 +573,7 @@ void handleWebsocketBuffer()
     }
 
     // modif network config
-    if (doc.containsKey("new_apName"))
+    if (doc["new_apName"].is<const char*>())
     {
       strlcpy(aConfig.networkConfig.apName,
               doc["new_apName"],
@@ -586,7 +587,7 @@ void handleWebsocketBuffer()
       sendNetworkConfigFlag = true;
     }
 
-    if (doc.containsKey("new_apPassword"))
+    if (doc["new_apPassword"].is<const char*>())
     {
       strlcpy(aConfig.networkConfig.apPassword,
               doc["new_apPassword"],
@@ -596,7 +597,7 @@ void handleWebsocketBuffer()
       sendNetworkConfigFlag = true;
     }
 
-    if (doc.containsKey("new_apIP"))
+    if (doc["new_apIP"].is<const char*>())
     {
       char newIPchar[16] = "";
 
@@ -616,7 +617,7 @@ void handleWebsocketBuffer()
       sendNetworkConfigFlag = true;
     }
 
-    if (doc.containsKey("new_apNetMsk"))
+    if (doc["new_apNetMsk"].is<const char*>())
     {
       char newNMchar[16] = "";
 
@@ -637,13 +638,13 @@ void handleWebsocketBuffer()
     }
 
     // actions sur le esp8266
-    if (doc.containsKey("new_restart") && doc["new_restart"] == 1)
+    if (doc["new_restart"].is<unsigned char>() && doc["new_restart"] == 1)
     {
       Serial.println(F("RESTART RESTART RESTART"));
       ESP.restart();
     }
 
-    if (doc.containsKey("new_refresh") && doc["new_refresh"] == 1)
+    if (doc["new_refresh"].is<unsigned char>() && doc["new_refresh"] == 1)
     {
       Serial.println(F("REFRESH"));
 
@@ -651,7 +652,7 @@ void handleWebsocketBuffer()
       sendNetworkConfigFlag = true;
     }
 
-    if (doc.containsKey("new_defaultObjectConfig") && doc["new_defaultObjectConfig"] == 1)
+    if (doc["new_defaultObjectConfig"].is<unsigned char>() && doc["new_defaultObjectConfig"] == 1)
     {
       aConfig.writeDefaultObjectConfig("/config/objectconfig.txt");
       Serial.println(F("reset to default object config"));
@@ -665,7 +666,7 @@ void handleWebsocketBuffer()
       uneFois = true;
     }
 
-    if (doc.containsKey("new_defaultNetworkConfig") && doc["new_defaultNetworkConfig"] == 1)
+    if (doc["new_defaultNetworkConfig"].is<unsigned char>() && doc["new_defaultNetworkConfig"] == 1)
     {
       aConfig.writeDefaultNetworkConfig("/config/networkconfig.txt");
       Serial.println(F("reset to default network config"));
