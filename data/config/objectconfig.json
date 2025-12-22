@@ -1,7 +1,7 @@
 {
 	"objectId": 1,
 	"groupId": 1,
-	"objectName": "panneau 1",
+	"objectName": "panneau-1",
 	"activeLeds": 8,
 	"nbColonnes": 2,
 	"nbSegments": 4,
