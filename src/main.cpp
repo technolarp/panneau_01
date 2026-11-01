@@ -2,7 +2,7 @@
    ----------------------------------------------------------------------------
    TECHNOLARP - https://technolarp.github.io/
    PANNEAU 01 - https://github.com/technolarp/panneau_01
-   version 1.3.0 - 11/2025
+   version 1.4.0 - 11/2026
    ----------------------------------------------------------------------------
 */
 
@@ -55,6 +55,10 @@ bool flagReceiveWebsocket = false;
 // MDNS
 #include <ESP8266mDNS.h>
 
+// OTA
+#include <ElegantOTA.h>
+unsigned long ota_progress_millis = 0;
+
 // CONFIG
 #include "config.h"
 M_config aConfig;
@@ -101,6 +105,9 @@ void writeNetworkConfig();
 void convertStrToRGB(const char *source, uint8_t *r, uint8_t *g, uint8_t *b);
 void panneauActif();
 void panneauBlink();
+void onOTAStart();
+void onOTAProgress(size_t current, size_t final);
+void onOTAEnd(bool success);
 
 /*
    ----------------------------------------------------------------------------
@@ -118,7 +125,7 @@ void setup()
   Serial.println(F("----------------------------------------------------------------------------"));
   Serial.println(F("TECHNOLARP - https://technolarp.github.io/"));
   Serial.println(F("PANNEAU 01 - https://github.com/technolarp/panneau_01"));
-  Serial.println(F("version 1.3.0 - 11/2025"));
+  Serial.println(F("version 1.4.0 - 11/2026"));
   Serial.println(F("----------------------------------------------------------------------------"));
 
   // I2C RESET
@@ -132,9 +139,42 @@ void setup()
   aConfig.listDir("/config");
   aConfig.listDir("/www");
 
+// CHECK OBJECT CONFIG
+  Serial.println(F("OBJECT CONFIG"));
+  
+  if (aConfig.validateJsonFile("/config/objectconfig.json"))
+  {
+    Serial.println(F("object config file is valid"));
+  }
+  else
+  {
+    aFastled.allLedOn(CRGB::Yellow, true);
+    Serial.println(F("object config file is not valid, writing default object config"));
+    aConfig.writeDefaultObjectConfig("/config/objectconfig.json");
+    delay(1000);
+    aFastled.allLedOff();
+  }
+  
+  // READ OBJECT CONFIG
   aConfig.printJsonFile("/config/objectconfig.json");
   aConfig.readObjectConfig("/config/objectconfig.json");
-
+  
+  // CHECK NETWORK CONFIG
+  Serial.println(F("NETWORK CONFIG"));
+  if (aConfig.validateJsonFile("/config/networkconfig.json"))
+  {
+    Serial.println(F("network config file is valid"));
+  }
+  else
+  {
+    aFastled.allLedOn(CRGB::Cyan, true);
+    Serial.println(F("network config file is not valid, writing default network config"));
+    aConfig.writeDefaultNetworkConfig("/config/networkconfig.json");
+    delay(1000);
+    aFastled.allLedOff();
+  }  
+  
+  // READ NETWORK CONFIG
   aConfig.printJsonFile("/config/networkconfig.json");
   aConfig.readNetworkConfig("/config/networkconfig.json");
 
@@ -283,6 +323,14 @@ void setup()
   // Start server
   server.begin();
 
+  // OTA
+  //ElegantOTA.begin(&server, "admin", "admin");
+  ElegantOTA.begin(&server);    // Start ElegantOTA
+  // ElegantOTA callbacks
+  ElegantOTA.onStart(onOTAStart);
+  ElegantOTA.onProgress(onOTAProgress);
+  ElegantOTA.onEnd(onOTAEnd);
+
   // HEARTBEAT
   previousMillisHB = millis();
   intervalHB = 10000;
@@ -310,6 +358,9 @@ void loop()
 {
   // WEBSOCKET
   ws.cleanupClients();
+
+  // OTA
+  ElegantOTA.loop();
 
   // FASTLED
   aFastled.updateAnimation();
@@ -1047,3 +1098,28 @@ void panneauBlink()
    FIN DES FONCTIONS ADDITIONNELLES
    ----------------------------------------------------------------------------
 */
+
+
+void onOTAStart() {
+  // Log when OTA has started
+  Serial.println("OTA update started!");
+  // <Add your own code here>
+}
+
+void onOTAProgress(size_t current, size_t final) {
+  // Log every 1 second
+  if (millis() - ota_progress_millis > 1000) {
+    ota_progress_millis = millis();
+    Serial.printf("OTA Progress Current: %u bytes, Final: %u bytes\n", current, final);
+  }
+}
+
+void onOTAEnd(bool success) {
+  // Log when OTA has finished
+  if (success) {
+    Serial.println("OTA update finished successfully!");
+  } else {
+    Serial.println("There was an error during OTA update!");
+  }
+  // <Add your own code here>
+}

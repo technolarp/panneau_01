@@ -590,6 +590,33 @@ class M_config
     file.close();
   }
   
+  bool validateJsonFile(const char * filename)
+  {
+    // Open file for reading
+    File file = LittleFS.open(filename, "r");
+    if (!file) 
+    {
+      Serial.println(F("Failed to open file for reading"));
+      return false;
+    }
+
+    // Deserialize the JSON document
+    bool validate_rc = true;
+    JsonDocument doc;
+    
+    DeserializationError error = deserializeJson(doc, file);
+    if (error)
+    {
+      validate_rc = false;
+    }
+
+    // Close the file (File's destructor doesn't close the file)
+    file.close();
+
+    // return the result
+    return validate_rc;
+  }
+  
   void listDir(const char * dirname)
   {
     Serial.printf("Listing directory: %s", dirname);
